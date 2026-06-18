@@ -1,0 +1,141 @@
+
+> fintegrity-frontend@0.0.0 lint
+> eslint .
+
+
+/Users/yagizylldrm/fintegrity-staj/fintegrity-frontend/src/App.jsx
+  63:16  error  'err' is defined but never used  no-unused-vars
+
+/Users/yagizylldrm/fintegrity-staj/fintegrity-frontend/src/components/Dashboard.jsx
+    1:8    error  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+    4:73   error  'ArrowRight' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+    4:106  error  'Calendar' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 no-unused-vars
+    4:116  error  'Hash' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     no-unused-vars
+    7:25   error  'mockContracts' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-unused-vars
+    7:40   error  'mockAnomalies' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-unused-vars
+   64:5    error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  62 |
+  63 |   useEffect(() => {
+> 64 |     setChartData(generateChartDataFromMock());
+     |     ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  65 |
+  66 |     // Stat fetcher
+  67 |     const fetchStats = async () => {  react-hooks/set-state-in-effect
+   79:16   error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  153:14   error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+
+/Users/yagizylldrm/fintegrity-staj/fintegrity-frontend/src/pages/Anomalies.jsx
+   1:8   error  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+   3:25  error  'TrendingUp' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           no-unused-vars
+  27:5   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  25 |
+  26 |   useEffect(() => {
+> 27 |     fetchAnomalies();
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  28 |     const interval = setInterval(fetchAnomalies, 5000);
+  29 |     return () => clearInterval(interval);
+  30 |   }, []);  react-hooks/set-state-in-effect
+  40:14  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+
+/Users/yagizylldrm/fintegrity-staj/fintegrity-frontend/src/pages/Contracts.jsx
+   1:8   error  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+  29:5   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  27 |
+  28 |   useEffect(() => {
+> 29 |     fetchContracts();
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  30 |     const interval = setInterval(fetchContracts, 5000);
+  31 |     return () => clearInterval(interval);
+  32 |   }, []);  react-hooks/set-state-in-effect
+  41:14  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  60:14  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+
+/Users/yagizylldrm/fintegrity-staj/fintegrity-frontend/src/pages/Documents.jsx
+    1:8   error  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+   57:5   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  55 |
+  56 |   useEffect(() => {
+> 57 |     fetchDocuments();
+     |     ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  58 |     const interval = setInterval(fetchDocuments, 5000);
+  59 |     return () => clearInterval(interval);
+  60 |   }, []);  react-hooks/set-state-in-effect
+   76:14  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+   88:14  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+   99:14  error  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  139:33  error  Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. This value was memoized in source but not in compilation output.
+
+  137 |   };
+  138 |
+> 139 |   const filteredAndSortedDocs = useMemo(() => {
+      |                                 ^^^^^^^^^^^^^^^
+> 140 |     // 1. Arama ve Tür Filtreleme
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 141 |     let result = documentsList.filter(doc => {
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 170 |     return result;
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 171 |   }, [documentsList, searchTerm, sortField, sortDirection, typeFilter]);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Could not preserve existing memoization
+  172 |
+  173 |   return (
+  174 |     <motion.div                                                                     react-hooks/preserve-manual-memoization
+
+/Users/yagizylldrm/fintegrity-staj/fintegrity-frontend/src/pages/Login.jsx
+   1:8  error  'React' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  22:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  20 |     const savedUsername = localStorage.getItem('remembered_username');
+  21 |     if (savedUsername) {
+> 22 |       setUsername(savedUsername);
+     |       ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  23 |       setRememberMe(true);
+  24 |     }
+  25 |   }, []);  react-hooks/set-state-in-effect
+
+/Users/yagizylldrm/fintegrity-staj/fintegrity-frontend/src/pages/Settings.jsx
+   1:8   error  'React' is defined but never used  no-unused-vars
+  77:14  error  'err' is defined but never used    no-unused-vars
+
+/Users/yagizylldrm/fintegrity-staj/fintegrity-frontend/src/pages/UserPortal.jsx
+  1:8  error  'React' is defined but never used  no-unused-vars
+
+✖ 29 problems (29 errors, 0 warnings)
+

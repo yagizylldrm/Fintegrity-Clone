@@ -1,0 +1,32 @@
+# Fintegrity Backend - Python Dependencies
+# Install: pip install -r requirements.txt
+
+# Web Framework
+fastapi==0.137.1
+uvicorn==0.49.0
+
+# Database
+SQLAlchemy==2.0.51
+psycopg2-binary==2.9.12
+
+# Authentication & Security
+passlib==1.7.4
+bcrypt==3.2.2
+PyJWT==2.13.0
+
+# AI / Machine Learning
+scikit-learn==1.9.0
+numpy==2.4.6
+
+# Blockchain (Web3)
+web3==7.16.0
+
+# Utilities
+python-dotenv==1.2.2
+requests==2.34.2
+pydantic==2.13.4
+
+# Testing
+pytest==8.1.1
+httpx==0.27.0
+
