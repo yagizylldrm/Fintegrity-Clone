@@ -63,8 +63,8 @@ fintegrity-staj/
 
 ### 1. Repoyu Klonla
 ```bash
-git clone <repo-url>
-cd fintegrity-staj
+git clone https://github.com/yagizylldrm/Fintegrity-Clone.git
+cd Fintegrity-Clone
 ```
 
 ### 2. Tüm Bağımlılıkları Kur
