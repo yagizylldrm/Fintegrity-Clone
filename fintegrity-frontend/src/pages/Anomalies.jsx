@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Search, X, Activity, DollarSign, Calendar, Hash, Download, Filter, ArrowUpDown } from 'lucide-react';
 import axios from 'axios';
 import { BACKEND_URL } from '../config';
+import { useLanguage } from '../LanguageContext';
 
 export default function Anomalies() {
+  const { lang, t } = useLanguage();
   const [selectedAnomaly, setSelectedAnomaly] = useState(null);
   const [anomaliesList, setAnomaliesList] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -37,7 +39,7 @@ export default function Anomalies() {
       setAnomaliesList(prev => prev.map(a => a.id === id ? { ...a, status: newStatus } : a));
       setSelectedAnomaly(null);
     } catch {
-      alert("İşlem sırasında bir hata oluştu.");
+      alert(t('action_error'));
     }
   };
 
@@ -48,6 +50,21 @@ export default function Anomalies() {
       setSortField(field);
       setSortDirection('asc');
     }
+  };
+
+  const getRiskLabel = (risk) => {
+    if (risk === 'Kritik') return lang === 'TR' ? 'Kritik' : 'Critical';
+    if (risk === 'Yüksek') return lang === 'TR' ? 'Yüksek' : 'High';
+    if (risk === 'Orta') return lang === 'TR' ? 'Orta' : 'Medium';
+    if (risk === 'Düşük') return lang === 'TR' ? 'Düşük' : 'Low';
+    return risk;
+  };
+
+  const getStatusLabel = (status) => {
+    if (status === 'Beklemede') return t('pending');
+    if (status === 'Güvenli') return lang === 'TR' ? 'Güvenli' : 'Safe';
+    if (status === 'Donduruldu') return lang === 'TR' ? 'Donduruldu' : 'Frozen';
+    return status;
   };
 
   const filteredAndSortedAnomalies = useMemo(() => {
@@ -78,14 +95,16 @@ export default function Anomalies() {
 
   const exportToCSV = () => {
     if (filteredAndSortedAnomalies.length === 0) return;
-    const headers = ["ID", "Hesap/Kurum", "Tutar (TL)", "Risk Skoru", "Risk Seviyesi", "Durum", "Tarih", "TxHash"];
+    const headers = lang === 'TR'
+      ? ["ID", "Hesap/Kurum", "Tutar (TL)", "Risk Skoru", "Risk Seviyesi", "Durum", "Tarih", "TxHash"]
+      : ["ID", "Account/Org", "Amount (TL)", "Risk Score", "Risk Level", "Status", "Date", "TxHash"];
     const rows = filteredAndSortedAnomalies.map(anm => [
       anm.id,
       anm.account,
       anm.amount,
       anm.score,
-      anm.risk,
-      anm.status,
+      getRiskLabel(anm.risk),
+      getStatusLabel(anm.status),
       anm.date || '',
       anm.txHash || ''
     ]);
@@ -94,7 +113,7 @@ export default function Anomalies() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `anomaliler_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("download", `${lang === 'TR' ? 'anomaliler' : 'anomalies'}_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -111,9 +130,9 @@ export default function Anomalies() {
         <div>
           <h1 className="text-3xl font-black text-white flex items-center gap-3">
             <AlertTriangle className="text-rose-400" size={32} />
-            Yapay Zeka Anomali Tespiti
+            {t('anomalies_panel_title')}
           </h1>
-          <p className="text-slate-400 mt-2">Derin Öğrenme modelleri tarafından tespit edilen şüpheli finansal işlemler.</p>
+          <p className="text-slate-400 mt-2">{t('anomalies_panel_desc')}</p>
         </div>
 
         {/* Filtreleme ve Arama Çubuğu */}
@@ -122,7 +141,7 @@ export default function Anomalies() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             <input 
               type="text" 
-              placeholder="ID veya Kurum ara..." 
+              placeholder={t('search_id_org_placeholder')} 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="bg-slate-800/50 border border-slate-700 text-white pl-10 pr-4 py-2 rounded-xl focus:outline-none focus:border-rose-500 w-full md:w-60 transition-colors text-sm"
@@ -138,11 +157,11 @@ export default function Anomalies() {
               onChange={(e) => setRiskFilter(e.target.value)}
               className="bg-transparent text-slate-200 py-2 pl-2 pr-8 focus:outline-none cursor-pointer appearance-none text-sm animate-none"
             >
-              <option value="all" className="bg-slate-800">Tüm Seviyeler</option>
-              <option value="Kritik" className="bg-slate-800">Kritik</option>
-              <option value="Yüksek" className="bg-slate-800">Yüksek</option>
-              <option value="Orta" className="bg-slate-800">Orta</option>
-              <option value="Düşük" className="bg-slate-800">Düşük</option>
+              <option value="all" className="bg-slate-800">{t('all_levels')}</option>
+              <option value="Kritik" className="bg-slate-800">{getRiskLabel('Kritik')}</option>
+              <option value="Yüksek" className="bg-slate-800">{getRiskLabel('Yüksek')}</option>
+              <option value="Orta" className="bg-slate-800">{getRiskLabel('Orta')}</option>
+              <option value="Düşük" className="bg-slate-800">{getRiskLabel('Düşük')}</option>
             </select>
           </div>
 
@@ -155,10 +174,10 @@ export default function Anomalies() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="bg-transparent text-slate-200 py-2 pl-2 pr-8 focus:outline-none cursor-pointer appearance-none text-sm animate-none"
             >
-              <option value="all" className="bg-slate-800">Tüm Durumlar</option>
-              <option value="Beklemede" className="bg-slate-800">Beklemede</option>
-              <option value="Güvenli" className="bg-slate-800">Güvenli</option>
-              <option value="Donduruldu" className="bg-slate-800">Donduruldu</option>
+              <option value="all" className="bg-slate-800">{t('all_statuses')}</option>
+              <option value="Beklemede" className="bg-slate-800">{t('pending')}</option>
+              <option value="Güvenli" className="bg-slate-800">{getStatusLabel('Güvenli')}</option>
+              <option value="Donduruldu" className="bg-slate-800">{getStatusLabel('Donduruldu')}</option>
             </select>
           </div>
 
@@ -167,7 +186,7 @@ export default function Anomalies() {
             disabled={filteredAndSortedAnomalies.length === 0}
             className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-white font-semibold px-4 py-2 rounded-xl border border-slate-700 transition-all shadow-md text-sm"
           >
-            <Download size={16} /> Dışa Aktar
+            <Download size={16} /> {t('export')}
           </button>
         </div>
       </div>
@@ -179,35 +198,35 @@ export default function Anomalies() {
               <tr>
                 <th onClick={() => handleSort('id')} className="p-4 font-semibold cursor-pointer hover:bg-slate-800 transition-colors">
                   <div className="flex items-center gap-1">
-                    Anomali ID <ArrowUpDown size={14} className="opacity-50" />
+                    {t('anomaly_id')} <ArrowUpDown size={14} className="opacity-50" />
                   </div>
                 </th>
                 <th onClick={() => handleSort('account')} className="p-4 font-semibold cursor-pointer hover:bg-slate-800 transition-colors">
                   <div className="flex items-center gap-1">
-                    Hesap / Kurum <ArrowUpDown size={14} className="opacity-50" />
+                    {t('account_org')} <ArrowUpDown size={14} className="opacity-50" />
                   </div>
                 </th>
                 <th onClick={() => handleSort('amount')} className="p-4 font-semibold cursor-pointer hover:bg-slate-800 transition-colors">
                   <div className="flex items-center gap-1">
-                    Tutar (₺) <ArrowUpDown size={14} className="opacity-50" />
+                    {t('amount')} (₺) <ArrowUpDown size={14} className="opacity-50" />
                   </div>
                 </th>
                 <th onClick={() => handleSort('score')} className="p-4 font-semibold cursor-pointer hover:bg-slate-800 transition-colors">
                   <div className="flex items-center gap-1">
-                    Risk Skoru <ArrowUpDown size={14} className="opacity-50" />
+                    {t('risk_score')} <ArrowUpDown size={14} className="opacity-50" />
                   </div>
                 </th>
                 <th onClick={() => handleSort('risk')} className="p-4 font-semibold cursor-pointer hover:bg-slate-800 transition-colors">
                   <div className="flex items-center gap-1">
-                    Seviye <ArrowUpDown size={14} className="opacity-50" />
+                    {t('level')} <ArrowUpDown size={14} className="opacity-50" />
                   </div>
                 </th>
                 <th onClick={() => handleSort('status')} className="p-4 font-semibold cursor-pointer hover:bg-slate-800 transition-colors">
                   <div className="flex items-center gap-1">
-                    Durum <ArrowUpDown size={14} className="opacity-50" />
+                    {t('status')} <ArrowUpDown size={14} className="opacity-50" />
                   </div>
                 </th>
-                <th className="p-4 font-semibold">Eylem</th>
+                <th className="p-4 font-semibold">{t('action_col')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700/50">
@@ -233,12 +252,12 @@ export default function Anomalies() {
                       anm.risk === 'Yüksek' ? 'bg-rose-500/20 text-rose-400' :
                       'bg-amber-500/20 text-amber-400'
                     }`}>
-                      {anm.risk}
+                      {getRiskLabel(anm.risk)}
                     </span>
                   </td>
                   <td className="p-4 text-sm">
                     <span className={`px-2 py-1 rounded text-xs font-bold ${anm.status === 'Beklemede' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : anm.status === 'Güvenli' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}`}>
-                      {anm.status}
+                      {getStatusLabel(anm.status)}
                     </span>
                   </td>
                   <td className="p-4">
@@ -246,7 +265,7 @@ export default function Anomalies() {
                       onClick={() => setSelectedAnomaly(anm)}
                       className="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded transition-colors"
                     >
-                      İncele
+                      {t('inspect')}
                     </button>
                   </td>
                 </tr>
@@ -257,12 +276,12 @@ export default function Anomalies() {
         {filteredAndSortedAnomalies.length === 0 && (
           <div className="p-12 flex flex-col items-center justify-center text-slate-500">
             <Search size={48} className="mb-4 opacity-20" />
-            <p>Seçilen filtrelere uygun anomali bulunamadı.</p>
+            <p>{t('no_anomalies_found')}</p>
             <button 
               onClick={() => { setSearchTerm(''); setRiskFilter('all'); setStatusFilter('all'); setSortField('id'); setSortDirection('asc'); }}
               className="mt-4 text-rose-400 hover:text-rose-300 text-sm font-medium"
             >
-              Filtreleri Temizle
+              {t('clear_filters')}
             </button>
           </div>
         )}
@@ -284,7 +303,7 @@ export default function Anomalies() {
             >
               <div className="flex justify-between items-center p-6 border-b border-slate-700/50 bg-slate-800/50">
                 <h3 className="text-xl font-bold flex items-center gap-2 text-white">
-                  <Activity size={20} className="text-rose-400"/> {selectedAnomaly.id} İncelemesi
+                  <Activity size={20} className="text-rose-400"/> {selectedAnomaly.id} {t('anomaly_review')}
                 </h3>
                 <button onClick={() => setSelectedAnomaly(null)} className="text-slate-400 hover:text-white p-1 rounded-full hover:bg-slate-700 transition-colors">
                   <X size={20} />
@@ -293,34 +312,34 @@ export default function Anomalies() {
               <div className="p-6 space-y-6">
                 <div className="flex justify-between items-center bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
                   <div>
-                    <p className="text-xs text-slate-500 uppercase mb-1">Risk Seviyesi</p>
+                    <p className="text-xs text-slate-500 uppercase mb-1">{t('risk_level')}</p>
                     <span className={`px-3 py-1 rounded text-sm font-bold inline-block ${
                       selectedAnomaly.risk === 'Kritik' ? 'bg-red-500 text-white' :
                       selectedAnomaly.risk === 'Yüksek' ? 'bg-rose-500/20 text-rose-400' :
                       'bg-amber-500/20 text-amber-400'
                     }`}>
-                      {selectedAnomaly.risk}
+                      {getRiskLabel(selectedAnomaly.risk)}
                     </span>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-slate-500 uppercase mb-1">Yapay Zeka Güven Skoru</p>
+                    <p className="text-xs text-slate-500 uppercase mb-1">{t('ai_confidence_score')}</p>
                     <p className="text-2xl font-mono font-bold text-white">{(selectedAnomaly.score * 100).toFixed(1)}%</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/30">
-                    <p className="text-xs text-slate-500 flex items-center gap-1 mb-1"><DollarSign size={14}/> Tutar</p>
+                    <p className="text-xs text-slate-500 flex items-center gap-1 mb-1"><DollarSign size={14}/> {t('amount')}</p>
                     <p className="font-bold text-emerald-400 text-lg">{selectedAnomaly.amount.toLocaleString()} ₺</p>
                   </div>
                   <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/30">
-                    <p className="text-xs text-slate-500 flex items-center gap-1 mb-1"><Calendar size={14}/> Tarih</p>
+                    <p className="text-xs text-slate-500 flex items-center gap-1 mb-1"><Calendar size={14}/> {t('date')}</p>
                     <p className="font-medium text-white">{selectedAnomaly.date}</p>
                   </div>
                 </div>
 
                 <div>
-                  <p className="text-xs text-slate-500 flex items-center gap-1 mb-2"><Hash size={14}/> İlgili İşlem (TxHash)</p>
+                  <p className="text-xs text-slate-500 flex items-center gap-1 mb-2"><Hash size={14}/> {t('related_transaction')}</p>
                   <div className="bg-slate-900 p-3 rounded-xl border border-slate-800 break-all">
                     <p className="font-mono text-xs text-blue-400">{selectedAnomaly.txHash}9a8b7c6d5e4f3g</p>
                   </div>
@@ -332,18 +351,18 @@ export default function Anomalies() {
                       onClick={() => handleAction(selectedAnomaly.id, 'safe')}
                       className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-emerald-500/20"
                     >
-                      Güvenli İşaretle
+                      {t('mark_safe')}
                     </button>
                     <button 
                       onClick={() => handleAction(selectedAnomaly.id, 'freeze')}
                       className="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-rose-500/20"
                     >
-                      İşlemi Dondur
+                      {t('freeze_transaction')}
                     </button>
                   </div>
                 ) : (
                   <div className={`p-4 rounded-xl text-center font-bold border ${selectedAnomaly.status === 'Güvenli' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'}`}>
-                    Bu anomali daha önce '{selectedAnomaly.status}' olarak işaretlenmiş.
+                    {t('previously_resolved_msg').replace('{status}', getStatusLabel(selectedAnomaly.status))}
                   </div>
                 )}
               </div>

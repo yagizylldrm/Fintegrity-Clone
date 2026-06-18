@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Lock, User, ArrowRight, Loader, PlusCircle } from 'lucide-react';
 import axios from 'axios';
 import { BACKEND_URL } from '../config';
+import { useLanguage } from '../LanguageContext';
 
 export default function Login({ onLogin }) {
+  const { lang, changeLang, t } = useLanguage();
   const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -59,7 +61,7 @@ export default function Login({ onLogin }) {
       if (err.response && err.response.data && err.response.data.detail) {
         setError(err.response.data.detail);
       } else {
-        setError("Sunucuya bağlanılamadı. Lütfen backend'in çalıştığından emin olun.");
+        setError(t('error_connection'));
       }
     } finally {
       setIsLoading(false);
@@ -73,7 +75,7 @@ export default function Login({ onLogin }) {
     setSuccessMessage('');
 
     if (password !== confirmPassword) {
-      setError("Şifreler uyuşmuyor.");
+      setError(t('password_mismatch'));
       setIsLoading(false);
       return;
     }
@@ -85,7 +87,7 @@ export default function Login({ onLogin }) {
       });
 
       if (response.data.success) {
-        setSuccessMessage("Kayıt başarıyla tamamlandı! Giriş yapabilirsiniz.");
+        setSuccessMessage(t('register_success_msg'));
         setIsRegisterMode(false);
         setPassword('');
         setConfirmPassword('');
@@ -94,7 +96,7 @@ export default function Login({ onLogin }) {
       if (err.response && err.response.data && err.response.data.detail) {
         setError(err.response.data.detail);
       } else {
-        setError("Kayıt işlemi başarısız oldu.");
+        setError(t('register_failed_msg'));
       }
     } finally {
       setIsLoading(false);
@@ -103,6 +105,32 @@ export default function Login({ onLogin }) {
 
   return (
     <div className="min-h-screen bg-[#0f172a] flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Floating Language Switcher */}
+      <div className="absolute top-6 right-6 z-20 flex bg-slate-800/40 border border-slate-700/50 rounded-xl p-1">
+        <button
+          type="button"
+          onClick={() => changeLang('TR')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            lang === 'TR'
+              ? 'bg-blue-500 text-white shadow-md'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          TR
+        </button>
+        <button
+          type="button"
+          onClick={() => changeLang('EN')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+            lang === 'EN'
+              ? 'bg-blue-500 text-white shadow-md'
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          EN
+        </button>
+      </div>
+
       {/* Background Decor */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/20 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-emerald-500/20 blur-[100px] rounded-full pointer-events-none" />
@@ -119,7 +147,7 @@ export default function Login({ onLogin }) {
             </div>
             <h1 className="text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">FINTEGRITY</h1>
             <p className="text-slate-400 text-sm mt-2">
-              {isRegisterMode ? 'Yapay Zeka Destekli Kayıt Ağı' : 'Güvenli Yönetim Ağı'}
+              {isRegisterMode ? t('login_network_register') : t('login_network_active')}
             </p>
           </div>
 
@@ -147,7 +175,7 @@ export default function Login({ onLogin }) {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">Kullanıcı Adı</label>
+                    <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">{t('username')}</label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                       <input 
@@ -155,14 +183,14 @@ export default function Login({ onLogin }) {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
-                        placeholder="admin veya user"
+                        placeholder={t('username_placeholder')}
                         className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-white outline-none focus:border-blue-500 transition-colors"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">Şifre</label>
+                    <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">{t('password')}</label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                       <input 
@@ -184,7 +212,7 @@ export default function Login({ onLogin }) {
                         onChange={(e) => setRememberMe(e.target.checked)}
                         className="w-4 h-4 bg-slate-900 border border-slate-700 rounded text-blue-500 focus:ring-blue-500 focus:ring-offset-slate-900" 
                       />
-                      Beni Hatırla
+                      {t('remember_me')}
                     </label>
                   </div>
                 </div>
@@ -195,7 +223,7 @@ export default function Login({ onLogin }) {
                   className="w-full bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
                 >
                   {isLoading ? <Loader className="animate-spin" size={20} /> : (
-                    <>Sisteme Giriş Yap <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></>
+                    <>{t('login_action_btn')} <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></>
                   )}
                 </button>
 
@@ -209,7 +237,7 @@ export default function Login({ onLogin }) {
                     }}
                     className="text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors"
                   >
-                    Yeni Hesap Oluştur (Kayıt Ol)
+                    {t('create_new_account')}
                   </button>
                 </div>
               </motion.form>
@@ -230,7 +258,7 @@ export default function Login({ onLogin }) {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">Yeni Kullanıcı Adı</label>
+                    <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">{t('username')}</label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                       <input 
@@ -238,14 +266,14 @@ export default function Login({ onLogin }) {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required
-                        placeholder="Yeni kullanıcı adı yazın..."
+                        placeholder={t('username_new_placeholder')}
                         className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-white outline-none focus:border-blue-500 transition-colors"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">Şifre</label>
+                    <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">{t('password')}</label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                       <input 
@@ -253,14 +281,14 @@ export default function Login({ onLogin }) {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                        placeholder="Şifrenizi yazın..."
+                        placeholder={t('password_placeholder')}
                         className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-white outline-none focus:border-blue-500 transition-colors"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">Şifre Tekrar</label>
+                    <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">{t('confirm_password')}</label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                       <input 
@@ -268,7 +296,7 @@ export default function Login({ onLogin }) {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         required
-                        placeholder="Şifrenizi tekrar yazın..."
+                        placeholder={t('confirm_password_placeholder')}
                         className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-white outline-none focus:border-blue-500 transition-colors"
                       />
                     </div>
@@ -281,7 +309,7 @@ export default function Login({ onLogin }) {
                   className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-500 hover:to-blue-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
                 >
                   {isLoading ? <Loader className="animate-spin" size={20} /> : (
-                    <>Kayıt Ol <PlusCircle size={18} className="group-hover:scale-105 transition-transform" /></>
+                    <>{t('register_btn')} <PlusCircle size={18} className="group-hover:scale-105 transition-transform" /></>
                   )}
                 </button>
 
@@ -295,7 +323,7 @@ export default function Login({ onLogin }) {
                     }}
                     className="text-sm font-semibold text-slate-400 hover:text-slate-300 transition-colors"
                   >
-                    Zaten bir hesabın var mı? Giriş Yap
+                    {t('login_prompt')}
                   </button>
                 </div>
               </motion.form>
@@ -303,7 +331,7 @@ export default function Login({ onLogin }) {
           </AnimatePresence>
 
           <div className="mt-8 pt-6 border-t border-slate-800 text-center space-y-2">
-            <p className="text-xs text-slate-500">Test Hesapları:</p>
+            <p className="text-xs text-slate-500">{t('demo_accounts_title')}</p>
             <p className="text-xs font-mono text-slate-400 bg-slate-900 py-1 px-2 rounded inline-block mx-1">admin / admin123</p>
             <p className="text-xs font-mono text-slate-400 bg-slate-900 py-1 px-2 rounded inline-block mx-1">user / user123</p>
           </div>

@@ -1,7 +1,127 @@
 document_text,label
-"fatura bedeli kdv dahil edilerek sirketimize faturalandirilmistir",e-Fatura
-"consulting invoice for custom software development services",e-Fatura
-"sevk irsaliyesi teslimat adresi lojistik yetkilisine teslim",e-İrsaliye
-"depodan cikis sevk irsaliyesi ve tasima belgesi",e-İrsaliye
-"isbu gizlilik ve isbirligi sozlesmesi hukumleri taraflarca imzalandi",e-Sözleşme
-"agreement term sheet signed by both parties governing IP rights",e-Sözleşme
+fatura bedeli kdv dahil edilerek sirketimize faturalandirilmistir,e-Fatura
+tutar: 34844 tl fatura bedeli kdv dahil edilerek sirketimize faturalandirilmistir,e-Fatura
+invoice no: 279182 - fatura bedeli kdv dahil edilerek sirketimize faturalandirilmistir,e-Fatura
+consulting invoice for custom software development services,e-Fatura
+tutar: 8761 tl consulting invoice for custom software development services,e-Fatura
+invoice no: 470455 - consulting invoice for custom software development services,e-Fatura
+toplam tutar fatura kesim tarihi itibariyle banka hesabina odenecektir,e-Fatura
+tutar: 30056 tl toplam tutar fatura kesim tarihi itibariyle banka hesabina odenecektir,e-Fatura
+invoice no: 511679 - toplam tutar fatura kesim tarihi itibariyle banka hesabina odenecektir,e-Fatura
+fatura detayi ve vergi numarasi e-fatura mukellefi,e-Fatura
+tutar: 24232 tl fatura detayi ve vergi numarasi e-fatura mukellefi,e-Fatura
+invoice no: 774241 - fatura detayi ve vergi numarasi e-fatura mukellefi,e-Fatura
+kdv matrahi ve fatura kalemi dökümü ile birlikte ibraz edilmistir,e-Fatura
+tutar: 22087 tl kdv matrahi ve fatura kalemi dökümü ile birlikte ibraz edilmistir,e-Fatura
+invoice no: 731007 - kdv matrahi ve fatura kalemi dökümü ile birlikte ibraz edilmistir,e-Fatura
+toplam tutar odeme vadesi faturalandirilmistir,e-Fatura
+tutar: 10345 tl toplam tutar odeme vadesi faturalandirilmistir,e-Fatura
+invoice no: 741090 - toplam tutar odeme vadesi faturalandirilmistir,e-Fatura
+hizmet bedeli e-fatura kesilerek tahsil edilmistir,e-Fatura
+tutar: 35932 tl hizmet bedeli e-fatura kesilerek tahsil edilmistir,e-Fatura
+invoice no: 892305 - hizmet bedeli e-fatura kesilerek tahsil edilmistir,e-Fatura
+monthly subscription fees for cloud hosting services invoice,e-Fatura
+tutar: 37589 tl monthly subscription fees for cloud hosting services invoice,e-Fatura
+invoice no: 208027 - monthly subscription fees for cloud hosting services invoice,e-Fatura
+professional services rendering invoice billing code,e-Fatura
+tutar: 27467 tl professional services rendering invoice billing code,e-Fatura
+invoice no: 227843 - professional services rendering invoice billing code,e-Fatura
+vergi muafiyeti kapsaminda duzenlenen kdv'siz e-fatura,e-Fatura
+tutar: 36675 tl vergi muafiyeti kapsaminda duzenlenen kdv'siz e-fatura,e-Fatura
+invoice no: 283585 - vergi muafiyeti kapsaminda duzenlenen kdv'siz e-fatura,e-Fatura
+fatura genel toplami ve yaziyla odenecek tutar,e-Fatura
+tutar: 34649 tl fatura genel toplami ve yaziyla odenecek tutar,e-Fatura
+invoice no: 222162 - fatura genel toplami ve yaziyla odenecek tutar,e-Fatura
+is ortakligi danismanlik bedeli fatura beyannamesi,e-Fatura
+tutar: 2822 tl is ortakligi danismanlik bedeli fatura beyannamesi,e-Fatura
+invoice no: 920345 - is ortakligi danismanlik bedeli fatura beyannamesi,e-Fatura
+tasarim ve gelistirme bedeli kdv tevkifati uygulanan fatura,e-Fatura
+tutar: 49254 tl tasarim ve gelistirme bedeli kdv tevkifati uygulanan fatura,e-Fatura
+invoice no: 762867 - tasarim ve gelistirme bedeli kdv tevkifati uygulanan fatura,e-Fatura
+efatura e-arsiv fatura kdv toplami matrah,e-Fatura
+tutar: 38077 tl efatura e-arsiv fatura kdv toplami matrah,e-Fatura
+invoice no: 437280 - efatura e-arsiv fatura kdv toplami matrah,e-Fatura
+sevk irsaliyesi teslimat adresi lojistik yetkilisine teslim,e-İrsaliye
+irsaliye tarihi: 2026-06-18 sevk irsaliyesi teslimat adresi lojistik yetkilisine teslim,e-İrsaliye
+plaka: 34XYZ73 - sevk irsaliyesi teslimat adresi lojistik yetkilisine teslim,e-İrsaliye
+depodan cikis sevk irsaliyesi ve tasima belgesi esliginde,e-İrsaliye
+irsaliye tarihi: 2026-06-18 depodan cikis sevk irsaliyesi ve tasima belgesi esliginde,e-İrsaliye
+plaka: 34XYZ13 - depodan cikis sevk irsaliyesi ve tasima belgesi esliginde,e-İrsaliye
+delivery note for the goods shipped to corporate headquarters,e-İrsaliye
+irsaliye tarihi: 2026-06-18 delivery note for the goods shipped to corporate headquarters,e-İrsaliye
+plaka: 34XYZ28 - delivery note for the goods shipped to corporate headquarters,e-İrsaliye
+irsaliye numarasi ve teslim alan yetkili personel imzasi,e-İrsaliye
+irsaliye tarihi: 2026-06-18 irsaliye numarasi ve teslim alan yetkili personel imzasi,e-İrsaliye
+plaka: 34XYZ27 - irsaliye numarasi ve teslim alan yetkili personel imzasi,e-İrsaliye
+sevk adresi ve depo teslimat irsaliyesi kontrolu,e-İrsaliye
+irsaliye tarihi: 2026-06-18 sevk adresi ve depo teslimat irsaliyesi kontrolu,e-İrsaliye
+plaka: 34XYZ94 - sevk adresi ve depo teslimat irsaliyesi kontrolu,e-İrsaliye
+tasima irsaliyesi detaylari ve fiili sevk tarihi,e-İrsaliye
+irsaliye tarihi: 2026-06-18 tasima irsaliyesi detaylari ve fiili sevk tarihi,e-İrsaliye
+plaka: 34XYZ35 - tasima irsaliyesi detaylari ve fiili sevk tarihi,e-İrsaliye
+urunlerin sevkiyatı irsaliye belgesi esliginde kamyonla yapildi,e-İrsaliye
+irsaliye tarihi: 2026-06-18 urunlerin sevkiyatı irsaliye belgesi esliginde kamyonla yapildi,e-İrsaliye
+plaka: 34XYZ77 - urunlerin sevkiyatı irsaliye belgesi esliginde kamyonla yapildi,e-İrsaliye
+mal kabul ve irsaliye uzerindeki urun miktarlarinin eslesmesi,e-İrsaliye
+irsaliye tarihi: 2026-06-18 mal kabul ve irsaliye uzerindeki urun miktarlarinin eslesmesi,e-İrsaliye
+plaka: 34XYZ77 - mal kabul ve irsaliye uzerindeki urun miktarlarinin eslesmesi,e-İrsaliye
+sevk irsaliyesi ile sevkiyat ambarina teslim edilen urunler,e-İrsaliye
+irsaliye tarihi: 2026-06-18 sevk irsaliyesi ile sevkiyat ambarina teslim edilen urunler,e-İrsaliye
+plaka: 34XYZ58 - sevk irsaliyesi ile sevkiyat ambarina teslim edilen urunler,e-İrsaliye
+irsaliyeli fatura ile birlikte teslim edilen koli adedi,e-İrsaliye
+irsaliye tarihi: 2026-06-18 irsaliyeli fatura ile birlikte teslim edilen koli adedi,e-İrsaliye
+plaka: 34XYZ95 - irsaliyeli fatura ile birlikte teslim edilen koli adedi,e-İrsaliye
+lojistik depo cikisi e-irsaliye onay kodu,e-İrsaliye
+irsaliye tarihi: 2026-06-18 lojistik depo cikisi e-irsaliye onay kodu,e-İrsaliye
+plaka: 34XYZ32 - lojistik depo cikisi e-irsaliye onay kodu,e-İrsaliye
+tasima sirketi irsaliye beyani plaka no ve sofor bilgisi,e-İrsaliye
+irsaliye tarihi: 2026-06-18 tasima sirketi irsaliye beyani plaka no ve sofor bilgisi,e-İrsaliye
+plaka: 34XYZ49 - tasima sirketi irsaliye beyani plaka no ve sofor bilgisi,e-İrsaliye
+sevkiyat amiri onayli e-irsaliye ciktisi ve teslim raporu,e-İrsaliye
+irsaliye tarihi: 2026-06-18 sevkiyat amiri onayli e-irsaliye ciktisi ve teslim raporu,e-İrsaliye
+plaka: 34XYZ75 - sevkiyat amiri onayli e-irsaliye ciktisi ve teslim raporu,e-İrsaliye
+shipped cargo waybill delivery note details and packages,e-İrsaliye
+irsaliye tarihi: 2026-06-18 shipped cargo waybill delivery note details and packages,e-İrsaliye
+plaka: 34XYZ32 - shipped cargo waybill delivery note details and packages,e-İrsaliye
+isbu gizlilik ve isbirligi sozlesmesi hukumleri taraflarca imzalandi,e-Sözleşme
+isbu sozlesme 12 maddeden olusup isbu gizlilik ve isbirligi sozlesmesi hukumleri taraflarca imzalandi,e-Sözleşme
+signed agreement - isbu gizlilik ve isbirligi sozlesmesi hukumleri taraflarca imzalandi,e-Sözleşme
+agreement term sheet signed by both parties governing IP rights,e-Sözleşme
+isbu sozlesme 12 maddeden olusup agreement term sheet signed by both parties governing IP rights,e-Sözleşme
+signed agreement - agreement term sheet signed by both parties governing IP rights,e-Sözleşme
+sozlesme yukumlulukleri ve gizlilik maddesi ihlali durumunda,e-Sözleşme
+isbu sozlesme 12 maddeden olusup sozlesme yukumlulukleri ve gizlilik maddesi ihlali durumunda,e-Sözleşme
+signed agreement - sozlesme yukumlulukleri ve gizlilik maddesi ihlali durumunda,e-Sözleşme
+kontrat hukumleri geregince akilli sozlesme onaylandi,e-Sözleşme
+isbu sozlesme 12 maddeden olusup kontrat hukumleri geregince akilli sozlesme onaylandi,e-Sözleşme
+signed agreement - kontrat hukumleri geregince akilli sozlesme onaylandi,e-Sözleşme
+taraflarin karsilikli anlasmasi ve sozlesme onayi maddesi,e-Sözleşme
+isbu sozlesme 12 maddeden olusup taraflarin karsilikli anlasmasi ve sozlesme onayi maddesi,e-Sözleşme
+signed agreement - taraflarin karsilikli anlasmasi ve sozlesme onayi maddesi,e-Sözleşme
+gizlilik ve isbirligi sozlesmesi sartlari saklidir,e-Sözleşme
+isbu sozlesme 12 maddeden olusup gizlilik ve isbirligi sozlesmesi sartlari saklidir,e-Sözleşme
+signed agreement - gizlilik ve isbirligi sozlesmesi sartlari saklidir,e-Sözleşme
+employment agreement between employer and employee details,e-Sözleşme
+isbu sozlesme 12 maddeden olusup employment agreement between employer and employee details,e-Sözleşme
+signed agreement - employment agreement between employer and employee details,e-Sözleşme
+master services agreement terms and conditions signed digitally,e-Sözleşme
+isbu sozlesme 12 maddeden olusup master services agreement terms and conditions signed digitally,e-Sözleşme
+signed agreement - master services agreement terms and conditions signed digitally,e-Sözleşme
+taraflar bu sozlesme kapsaminda dogacak ihtilaflari kabul eder,e-Sözleşme
+isbu sozlesme 12 maddeden olusup taraflar bu sozlesme kapsaminda dogacak ihtilaflari kabul eder,e-Sözleşme
+signed agreement - taraflar bu sozlesme kapsaminda dogacak ihtilaflari kabul eder,e-Sözleşme
+sozlesmenin feshi ve tazminat maddeleri aciklanmistir,e-Sözleşme
+isbu sozlesme 12 maddeden olusup sozlesmenin feshi ve tazminat maddeleri aciklanmistir,e-Sözleşme
+signed agreement - sozlesmenin feshi ve tazminat maddeleri aciklanmistir,e-Sözleşme
+iki taraf arasinda akdedilen danismanlik sozlesmesi suresi,e-Sözleşme
+isbu sozlesme 12 maddeden olusup iki taraf arasinda akdedilen danismanlik sozlesmesi suresi,e-Sözleşme
+signed agreement - iki taraf arasinda akdedilen danismanlik sozlesmesi suresi,e-Sözleşme
+akilli sozlesme uzerindeki sartlarin yerine getirilmesi,e-Sözleşme
+isbu sozlesme 12 maddeden olusup akilli sozlesme uzerindeki sartlarin yerine getirilmesi,e-Sözleşme
+signed agreement - akilli sozlesme uzerindeki sartlarin yerine getirilmesi,e-Sözleşme
+yetkili mahkemeler ve sozlesmenin yururluluk tarihi maddesi,e-Sözleşme
+isbu sozlesme 12 maddeden olusup yetkili mahkemeler ve sozlesmenin yururluluk tarihi maddesi,e-Sözleşme
+signed agreement - yetkili mahkemeler ve sozlesmenin yururluluk tarihi maddesi,e-Sözleşme
+digital service level agreement SLA terms signoff,e-Sözleşme
+isbu sozlesme 12 maddeden olusup digital service level agreement SLA terms signoff,e-Sözleşme
+signed agreement - digital service level agreement SLA terms signoff,e-Sözleşme

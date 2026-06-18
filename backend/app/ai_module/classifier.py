@@ -4,6 +4,23 @@ import numpy as np
 
 class DocumentClassifier:
     def __init__(self):
+        import os
+        import pickle
+        
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(current_dir, "models", "document_classifier.pkl")
+        
+        if os.path.exists(model_path):
+            try:
+                with open(model_path, "rb") as f:
+                    model_data = pickle.load(f)
+                self.vectorizer = model_data["vectorizer"]
+                self.classifier = model_data["classifier"]
+                print(f"   [AI] Doküman sınıflandırma modeli diskten başarıyla yüklendi: {model_path}")
+                return
+            except Exception as e:
+                print(f"   [AI] Model yüklenirken hata oluştu: {e}. Fallback eğitime geçiliyor.")
+
         # Labeled training set for documents in Turkish & English keywords/phrases
         self.corpus = [
             # e-Fatura
@@ -40,6 +57,7 @@ class DocumentClassifier:
         # Fit vectorizer and classifier
         X_train = self.vectorizer.fit_transform(self.corpus)
         self.classifier.fit(X_train, self.labels)
+        print("   [AI] Doküman sınıflandırma modeli in-memory olarak eğitildi (Fallback).")
 
     def classify(self, text: str) -> dict:
         if not text or not text.strip():

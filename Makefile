@@ -40,6 +40,10 @@ test-blockchain: ## Run blockchain contract tests
 lint: ## Run frontend linter
 	cd fintegrity-frontend && npx eslint .
 
+# ─── AI Module ───────────────────────────────────────────
+train-ai: ## Train and serialize AI models
+	cd backend && source venv/bin/activate && python app/ai_module/train.py
+
 # ─── Utilities ───────────────────────────────────────────
 clean: ## Clean generated files
 	rm -rf backend/__pycache__ backend/app/__pycache__

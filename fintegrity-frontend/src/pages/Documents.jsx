@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Search, Filter, ArrowUpDown, X, Hash, Calendar, DollarSign, User, ShieldCheck, Plus, Download } from 'lucide-react';
 import axios from 'axios';
 import { BACKEND_URL } from '../config';
+import { useLanguage } from '../LanguageContext';
 
 const formatDocDate = (dateStr) => {
   if (!dateStr) return '';
@@ -29,6 +30,7 @@ const truncateHash = (hashStr) => {
 };
 
 export default function Documents({ auth }) {
+  const { lang, t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState('date');
   const [sortDirection, setSortDirection] = useState('desc');
@@ -44,6 +46,22 @@ export default function Documents({ auth }) {
   const [newDocSender, setNewDocSender] = useState('');
   const [newDocAmount, setNewDocAmount] = useState('');
   const [newDocStatus, setNewDocStatus] = useState('Beklemede');
+
+  const getDocTypeLabel = (type) => {
+    if (type === 'e-Fatura') return lang === 'TR' ? 'e-Fatura' : 'e-Invoice';
+    if (type === 'e-İrsaliye') return lang === 'TR' ? 'e-İrsaliye' : 'e-Waybill';
+    if (type === 'e-Sözleşme') return lang === 'TR' ? 'e-Sözleşme' : 'e-Contract';
+    if (type === 'e-Makbuz') return lang === 'TR' ? 'e-Makbuz' : 'e-Receipt';
+    return type;
+  };
+
+  const getStatusLabel = (status) => {
+    if (status === 'Onaylandı') return t('approved');
+    if (status === 'İmzalandı') return lang === 'TR' ? 'İmzalandı' : 'Signed';
+    if (status === 'Reddedildi') return t('rejected');
+    if (status === 'Beklemede') return t('pending');
+    return status;
+  };
 
   const fetchDocuments = async () => {
     try {
@@ -75,7 +93,7 @@ export default function Documents({ auth }) {
       setNewDocStatus('Beklemede');
       fetchDocuments();
     } catch (_) {
-      alert("Belge eklenemedi.");
+      alert(t('doc_add_error'));
     }
   };
 
@@ -87,18 +105,18 @@ export default function Documents({ auth }) {
         setSelectedDoc({ ...selectedDoc, status: newStatus });
       }
     } catch (_) {
-      alert("Belge durumu güncellenemedi.");
+      alert(t('doc_status_error'));
     }
   };
 
   const handleDeleteDocument = async (id) => {
-    if (!window.confirm("Bu belgeyi kalıcı olarak silmek istediğinize emin misiniz?")) return;
+    if (!window.confirm(t('doc_delete_confirm'))) return;
     try {
       await axios.delete(`${BACKEND_URL}/api/documents/${id}`);
       setDocumentsList(prev => prev.filter(d => d.id !== id));
       setSelectedDoc(null);
     } catch (_) {
-      alert("Belge silinemedi.");
+      alert(t('doc_delete_error'));
     }
   };
 
@@ -109,7 +127,7 @@ export default function Documents({ auth }) {
       const res = await axios.get(`${BACKEND_URL}/api/documents/${docId}/verify-chain`);
       setVerifyResult(res.data);
     } catch (_) {
-      setVerifyResult({ verified: false, status: 'ERROR', message: 'Doğrulama sırasında hata oluştu' });
+      setVerifyResult({ verified: false, status: 'ERROR', message: t('doc_verify_error') });
     } finally {
       setVerifying(false);
     }
@@ -117,13 +135,15 @@ export default function Documents({ auth }) {
 
   const exportToCSV = () => {
     if (filteredAndSortedDocs.length === 0) return;
-    const headers = ["Belge ID", "Gönderici", "Tür", "Tutar (TL)", "Durum", "Tarih", "Tx Hash"];
+    const headers = lang === 'TR'
+      ? ["Belge ID", "Gönderici", "Tür", "Tutar (TL)", "Durum", "Tarih", "Tx Hash"]
+      : ["Document ID", "Sender", "Type", "Amount (TL)", "Status", "Date", "Tx Hash"];
     const rows = filteredAndSortedDocs.map(doc => [
       doc.id,
       doc.sender,
-      doc.type,
+      getDocTypeLabel(doc.type),
       doc.amount,
-      doc.status,
+      getStatusLabel(doc.status),
       doc.date,
       doc.hash
     ]);
@@ -132,7 +152,7 @@ export default function Documents({ auth }) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `belgeler_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("download", `${lang === 'TR' ? 'belgeler' : 'documents'}_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -195,9 +215,9 @@ export default function Documents({ auth }) {
         <div>
           <h1 className="text-3xl font-black text-white flex items-center gap-3">
             <FileText className="text-blue-400" size={32} />
-            Tüm Belgeler
+            {t('doc_panel_title')}
           </h1>
-          <p className="text-slate-400 mt-2">Sistemdeki tüm e-Dönüşüm belgelerinin kayıtları.</p>
+          <p className="text-slate-400 mt-2">{t('doc_panel_desc')}</p>
         </div>
 
         {/* Filtreleme ve Arama Çubuğu */}
@@ -206,7 +226,7 @@ export default function Documents({ auth }) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             <input 
               type="text" 
-              placeholder="Belge ID veya Gönderici ara..." 
+              placeholder={t('search_doc_placeholder')} 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="bg-slate-800/50 border border-slate-700 text-white pl-10 pr-4 py-2 rounded-xl focus:outline-none focus:border-blue-500 w-64 transition-colors"
@@ -222,9 +242,9 @@ export default function Documents({ auth }) {
               onChange={(e) => setTypeFilter(e.target.value)}
               className="bg-transparent text-slate-200 py-2 pl-2 pr-8 focus:outline-none cursor-pointer appearance-none"
             >
-              <option value="all" className="bg-slate-800">Tüm Türler</option>
+              <option value="all" className="bg-slate-800">{t('all_types')}</option>
               {documentTypes.filter(t => t !== 'all').map(type => (
-                <option key={type} value={type} className="bg-slate-800">{type}</option>
+                <option key={type} value={type} className="bg-slate-800">{getDocTypeLabel(type)}</option>
               ))}
             </select>
           </div>
@@ -242,10 +262,10 @@ export default function Documents({ auth }) {
               }}
               className="bg-transparent text-slate-200 py-2 pl-2 pr-8 focus:outline-none cursor-pointer appearance-none"
             >
-              <option value="date_desc" className="bg-slate-800">En Yeni</option>
-              <option value="date_asc" className="bg-slate-800">En Eski</option>
-              <option value="amount_desc" className="bg-slate-800">Tutar (Yüksekten Düşüğe)</option>
-              <option value="amount_asc" className="bg-slate-800">Tutar (Düşükten Yükseğe)</option>
+              <option value="date_desc" className="bg-slate-800">{t('sort_newest')}</option>
+              <option value="date_asc" className="bg-slate-800">{t('sort_oldest')}</option>
+              <option value="amount_desc" className="bg-slate-800">{t('sort_amount_high')}</option>
+              <option value="amount_asc" className="bg-slate-800">{t('sort_amount_low')}</option>
             </select>
           </div>
 
@@ -254,14 +274,14 @@ export default function Documents({ auth }) {
             disabled={filteredAndSortedDocs.length === 0}
             className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-white font-semibold px-4 py-2 rounded-xl border border-slate-700 transition-all shadow-md text-sm"
           >
-            <Download size={16} /> Dışa Aktar
+            <Download size={16} /> {t('export')}
           </button>
 
           <button 
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-4 py-2 rounded-xl transition-all shadow-md shadow-blue-500/20 text-sm"
           >
-            <Plus size={18} /> Yeni Belge Girişi
+            <Plus size={18} /> {lang === 'TR' ? 'Yeni Belge Girişi' : 'New Document Entry'}
           </button>
         </div>
       </div>
@@ -272,22 +292,22 @@ export default function Documents({ auth }) {
             <thead className="bg-slate-800/50 border-b border-slate-700 text-slate-400 text-sm">
               <tr>
                 <th onClick={() => handleSort('id')} className="p-4 font-semibold cursor-pointer hover:bg-slate-800 transition-colors">
-                  Belge ID {sortField === 'id' && (sortDirection === 'asc' ? '▲' : '▼')}
+                  {lang === 'TR' ? 'Belge ID' : 'Document ID'} {sortField === 'id' && (sortDirection === 'asc' ? '▲' : '▼')}
                 </th>
                 <th onClick={() => handleSort('sender')} className="p-4 font-semibold cursor-pointer hover:bg-slate-800 transition-colors">
-                  Gönderici {sortField === 'sender' && (sortDirection === 'asc' ? '▲' : '▼')}
+                  {t('sender')} {sortField === 'sender' && (sortDirection === 'asc' ? '▲' : '▼')}
                 </th>
                 <th onClick={() => handleSort('type')} className="p-4 font-semibold cursor-pointer hover:bg-slate-800 transition-colors">
-                  Tür {sortField === 'type' && (sortDirection === 'asc' ? '▲' : '▼')}
+                  {lang === 'TR' ? 'Tür' : 'Type'} {sortField === 'type' && (sortDirection === 'asc' ? '▲' : '▼')}
                 </th>
                 <th onClick={() => handleSort('amount')} className="p-4 font-semibold text-right cursor-pointer hover:bg-slate-800 transition-colors">
-                  Tutar (₺) {sortField === 'amount' && (sortDirection === 'asc' ? '▲' : '▼')}
+                  {t('amount')} (₺) {sortField === 'amount' && (sortDirection === 'asc' ? '▲' : '▼')}
                 </th>
                 <th onClick={() => handleSort('status')} className="p-4 font-semibold text-center cursor-pointer hover:bg-slate-800 transition-colors">
-                  Durum {sortField === 'status' && (sortDirection === 'asc' ? '▲' : '▼')}
+                  {t('status')} {sortField === 'status' && (sortDirection === 'asc' ? '▲' : '▼')}
                 </th>
                 <th onClick={() => handleSort('date')} className="p-4 font-semibold cursor-pointer hover:bg-slate-800 transition-colors">
-                  Tarih {sortField === 'date' && (sortDirection === 'asc' ? '▲' : '▼')}
+                  {t('date')} {sortField === 'date' && (sortDirection === 'asc' ? '▲' : '▼')}
                 </th>
                 <th onClick={() => handleSort('hash')} className="p-4 font-semibold cursor-pointer hover:bg-slate-800 transition-colors">
                   Tx Hash {sortField === 'hash' && (sortDirection === 'asc' ? '▲' : '▼')}
@@ -300,7 +320,7 @@ export default function Documents({ auth }) {
                   <td className="p-4 font-mono font-medium text-white">{doc.id}</td>
                   <td className="p-4 truncate max-w-[200px]" title={doc.sender}>{doc.sender}</td>
                   <td className="p-4">
-                    <span className="bg-slate-800 px-3 py-1 rounded-full text-xs font-medium border border-slate-700">{doc.type}</span>
+                    <span className="bg-slate-800 px-3 py-1 rounded-full text-xs font-medium border border-slate-700">{getDocTypeLabel(doc.type)}</span>
                   </td>
                   <td className="p-4 font-semibold text-right">{doc.amount.toLocaleString()}</td>
                   <td className="p-4 text-center">
@@ -310,7 +330,7 @@ export default function Documents({ auth }) {
                       doc.status === 'Reddedildi' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' :
                       'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                     }`}>
-                      {doc.status}
+                      {getStatusLabel(doc.status)}
                     </span>
                   </td>
                   <td className="p-4 text-sm text-slate-400">{formatDocDate(doc.date)}</td>
@@ -323,12 +343,12 @@ export default function Documents({ auth }) {
         {filteredAndSortedDocs.length === 0 && (
           <div className="p-12 flex flex-col items-center justify-center text-slate-500">
             <Search size={48} className="mb-4 opacity-20" />
-            <p>Seçilen filtrelere uygun belge bulunamadı.</p>
+            <p>{t('no_docs_found')}</p>
             <button 
               onClick={() => { setSearchTerm(''); setTypeFilter('all'); setSortField('date'); setSortDirection('desc'); }}
               className="mt-4 text-blue-400 hover:text-blue-300 text-sm font-medium"
             >
-              Filtreleri Temizle
+              {t('clear_filters')}
             </button>
           </div>
         )}
@@ -350,16 +370,16 @@ export default function Documents({ auth }) {
             >
               <div className="flex justify-between items-center p-6 border-b border-slate-700/50 bg-slate-800/50">
                 <h3 className="text-xl font-bold flex items-center gap-2 text-white">
-                  <FileText size={20} className="text-blue-400"/> {selectedDoc.id} Detayları
+                  <FileText size={20} className="text-blue-400"/> {selectedDoc.id} {t('details')}
                 </h3>
                 <button onClick={() => { setSelectedDoc(null); setVerifyResult(null); setVerifying(false); }} className="text-slate-400 hover:text-white p-1 rounded-full hover:bg-slate-700 transition-colors">
                   <X size={20} />
                 </button>
               </div>
-              <div className="p-6 space-y-6">
+              <div className="p-6 space-y-6 text-left">
                 <div className="flex justify-between items-start">
                   <div>
-                    <span className="bg-slate-800 px-3 py-1 rounded-full text-sm font-medium border border-slate-700 text-white">{selectedDoc.type}</span>
+                    <span className="bg-slate-800 px-3 py-1 rounded-full text-sm font-medium border border-slate-700 text-white">{getDocTypeLabel(selectedDoc.type)}</span>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-sm font-bold ${
                     selectedDoc.status === 'Onaylandı' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
@@ -367,33 +387,33 @@ export default function Documents({ auth }) {
                     selectedDoc.status === 'Reddedildi' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' :
                     'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                   }`}>
-                    {selectedDoc.status}
+                    {getStatusLabel(selectedDoc.status)}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/30">
-                    <p className="text-xs text-slate-500 flex items-center gap-1 mb-1"><User size={14}/> Gönderici</p>
+                    <p className="text-xs text-slate-500 flex items-center gap-1 mb-1"><User size={14}/> {t('sender')}</p>
                     <p className="font-semibold text-white">{selectedDoc.sender}</p>
                   </div>
                   <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/30">
-                    <p className="text-xs text-slate-500 flex items-center gap-1 mb-1"><DollarSign size={14}/> Tutar</p>
+                    <p className="text-xs text-slate-500 flex items-center gap-1 mb-1"><DollarSign size={14}/> {t('amount')}</p>
                     <p className="font-bold text-emerald-400 text-lg">{selectedDoc.amount.toLocaleString()} ₺</p>
                   </div>
                   <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/30">
-                    <p className="text-xs text-slate-500 flex items-center gap-1 mb-1"><Calendar size={14}/> Tarih</p>
+                    <p className="text-xs text-slate-500 flex items-center gap-1 mb-1"><Calendar size={14}/> {t('date')}</p>
                     <p className="font-medium text-white">{selectedDoc.date}</p>
                   </div>
                   <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/30">
-                    <p className="text-xs text-slate-500 flex items-center gap-1 mb-1"><ShieldCheck size={14}/> Doğrulama</p>
-                    <p className="font-medium text-blue-400">Blockchain Onaylı</p>
+                    <p className="text-xs text-slate-500 flex items-center gap-1 mb-1"><ShieldCheck size={14}/> {t('verify')}</p>
+                    <p className="font-medium text-blue-400">{t('blockchain_approved')}</p>
                   </div>
                 </div>
 
                 <div>
                   <p className="text-xs text-slate-500 flex items-center gap-1 mb-2"><Hash size={14}/> Transaction Hash</p>
                   <div className="bg-slate-900 p-3 rounded-xl border border-slate-800 break-all">
-                    <p className="font-mono text-xs text-slate-300">{selectedDoc.hash || 'Mevcut değil'}</p>
+                    <p className="font-mono text-xs text-slate-300">{selectedDoc.hash || t('not_available')}</p>
                   </div>
                 </div>
 
@@ -405,9 +425,9 @@ export default function Documents({ auth }) {
                     className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 text-blue-300 hover:from-blue-500/30 hover:to-cyan-500/30 transition-all duration-300 disabled:opacity-50 font-bold"
                   >
                     {verifying ? (
-                      <><div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" /> Doğrulanıyor...</>
+                      <><div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" /> {t('verifying')}</>
                     ) : (
-                      <><ShieldCheck size={18} /> Zincirde Doğrula</>
+                      <><ShieldCheck size={18} /> {lang === 'TR' ? 'Zincirde Doğrula' : 'Verify on Chain'}</>
                     )}
                   </button>
                   
@@ -425,11 +445,11 @@ export default function Documents({ auth }) {
                     >
                       <div className="flex items-center gap-2 mb-2">
                         {verifyResult.verified ? (
-                          <><span className="text-emerald-400 font-semibold flex items-center gap-1">✅ Doğrulandı</span></>
+                          <><span className="text-emerald-400 font-semibold flex items-center gap-1">✅ {lang === 'TR' ? 'Doğrulandı' : 'Verified'}</span></>
                         ) : verifyResult.status === 'NOT_FOUND' ? (
-                          <><span className="text-yellow-400 font-semibold flex items-center gap-1">⚠️ Zincirde Kayıt Yok</span></>
+                          <><span className="text-yellow-400 font-semibold flex items-center gap-1">⚠️ {lang === 'TR' ? 'Zincirde Kayıt Yok' : 'No Record on Chain'}</span></>
                         ) : (
-                          <><span className="text-red-400 font-semibold flex items-center gap-1">❌ Uyuşmazlık</span></>
+                          <><span className="text-red-400 font-semibold flex items-center gap-1">❌ {lang === 'TR' ? 'Uyuşmazlık' : 'Mismatch'}</span></>
                         )}
                       </div>
                       <p className="text-sm text-slate-300">{verifyResult.message}</p>
@@ -438,14 +458,13 @@ export default function Documents({ auth }) {
                           <p className="text-slate-500 break-all">DB Hash: <span className="text-slate-400 font-mono">{verifyResult.db_hash}</span></p>
                           <p className="text-slate-500 break-all">Chain Hash: <span className="text-slate-400 font-mono">{verifyResult.chain_hash}</span></p>
                           {verifyResult.chain_timestamp && (
-                            <p className="text-slate-500">Blok Zamanı: <span className="text-slate-400">{new Date(verifyResult.chain_timestamp * 1000).toLocaleString('tr-TR')}</span></p>
+                            <p className="text-slate-500">{t('block_time')}: <span className="text-slate-400">{new Date(verifyResult.chain_timestamp * 1000).toLocaleString(lang === 'TR' ? 'tr-TR' : 'en-US')}</span></p>
                           )}
                         </div>
                       )}
                     </motion.div>
                   )}
                 </div>
-
 
                 {auth?.role === 'admin' && (
                   <div className="flex flex-col gap-3 pt-4 border-t border-slate-700/50">
@@ -455,13 +474,13 @@ export default function Documents({ auth }) {
                           onClick={() => handleStatusChange(selectedDoc.id, 'Onaylandı')}
                           className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-emerald-500/20"
                         >
-                          Onayla
+                          {lang === 'TR' ? 'Onayla' : 'Approve'}
                         </button>
                         <button 
                           onClick={() => handleStatusChange(selectedDoc.id, 'Reddedildi')}
                           className="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-rose-500/20"
                         >
-                          Reddet
+                          {lang === 'TR' ? 'Reddet' : 'Reject'}
                         </button>
                       </div>
                     )}
@@ -469,7 +488,7 @@ export default function Documents({ auth }) {
                       onClick={() => handleDeleteDocument(selectedDoc.id)}
                       className="w-full bg-slate-800 hover:bg-rose-900/40 hover:text-rose-400 text-slate-300 font-bold py-3 rounded-xl transition-colors border border-slate-700 hover:border-rose-500/30"
                     >
-                      Belgeyi Sil
+                      {t('delete_document_btn')}
                     </button>
                   </div>
                 )}
@@ -492,7 +511,7 @@ export default function Documents({ auth }) {
             >
               <div className="flex justify-between items-center p-6 border-b border-slate-700/50 bg-slate-800/50">
                 <h3 className="text-xl font-bold flex items-center gap-2 text-white">
-                  <Plus size={20} className="text-blue-400"/> Yeni Belge Girişi
+                  <Plus size={20} className="text-blue-400"/> {lang === 'TR' ? 'Yeni Belge Girişi' : 'New Document Entry'}
                 </h3>
                 <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-white p-1 rounded-full hover:bg-slate-700 transition-colors">
                   <X size={20} />
@@ -500,33 +519,33 @@ export default function Documents({ auth }) {
               </div>
               <form onSubmit={handleAddDocument} className="p-6 space-y-6">
                 <div>
-                  <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">Belge Tipi</label>
+                  <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">{t('document_type_label')}</label>
                   <select 
                     value={newDocType}
                     onChange={(e) => setNewDocType(e.target.value)}
                     className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white outline-none focus:border-blue-500 transition-colors"
                   >
-                    <option value="e-Fatura">e-Fatura</option>
-                    <option value="e-İrsaliye">e-İrsaliye</option>
-                    <option value="e-Sözleşme">e-Sözleşme</option>
-                    <option value="e-Makbuz">e-Makbuz</option>
+                    <option value="e-Fatura">{getDocTypeLabel('e-Fatura')}</option>
+                    <option value="e-İrsaliye">{getDocTypeLabel('e-İrsaliye')}</option>
+                    <option value="e-Sözleşme">{getDocTypeLabel('e-Sözleşme')}</option>
+                    <option value="e-Makbuz">{getDocTypeLabel('e-Makbuz')}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">Gönderici / Kurum</label>
+                  <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">{t('sender')} / {t('company_label')}</label>
                   <input 
                     type="text" 
                     value={newDocSender}
                     onChange={(e) => setNewDocSender(e.target.value)}
                     required
-                    placeholder="Örn: Tech Corp A.Ş."
+                    placeholder={t('company_placeholder')}
                     className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white outline-none focus:border-blue-500 transition-colors"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">Tutar (₺)</label>
+                  <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">{t('amount')} (₺)</label>
                   <input 
                     type="number" 
                     value={newDocAmount}
@@ -539,16 +558,16 @@ export default function Documents({ auth }) {
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">Durum</label>
+                  <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">{t('status')}</label>
                   <select 
                     value={newDocStatus}
                     onChange={(e) => setNewDocStatus(e.target.value)}
                     className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white outline-none focus:border-blue-500 transition-colors"
                   >
-                    <option value="Onaylandı">Onaylandı</option>
-                    <option value="Beklemede">Beklemede</option>
-                    <option value="Reddedildi">Reddedildi</option>
-                    <option value="İmzalandı">İmzalandı</option>
+                    <option value="Onaylandı">{getStatusLabel('Onaylandı')}</option>
+                    <option value="Beklemede">{getStatusLabel('Beklemede')}</option>
+                    <option value="Reddedildi">{getStatusLabel('Reddedildi')}</option>
+                    <option value="İmzalandı">{getStatusLabel('İmzalandı')}</option>
                   </select>
                 </div>
 
@@ -558,13 +577,13 @@ export default function Documents({ auth }) {
                     onClick={() => setShowAddModal(false)}
                     className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition-colors border border-slate-700"
                   >
-                    İptal
+                    {t('cancel')}
                   </button>
                   <button 
                     type="submit"
                     className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-blue-500/20"
                   >
-                    Kaydet ve Gönder
+                    {t('save_and_submit')}
                   </button>
                 </div>
               </form>

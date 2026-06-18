@@ -26,8 +26,10 @@ import Anomalies from "./pages/Anomalies";
 import Login from "./pages/Login";
 import UserPortal from "./pages/UserPortal";
 import Settings from "./pages/Settings";
+import { useLanguage } from "./LanguageContext";
 
 function App() {
+  const { lang, changeLang, t } = useLanguage();
   const [auth, setAuth] = useState(null);
   const [isNetworkUp, setIsNetworkUp] = useState(true);
 
@@ -141,7 +143,7 @@ function App() {
               }
             >
               <LayoutDashboard size={20} />
-              Gösterge Paneli
+              {t('dashboard')}
             </NavLink>
 
             <NavLink
@@ -155,7 +157,7 @@ function App() {
               }
             >
               <FileText size={20} />
-              Tüm Belgeler
+              {t('all_documents')}
             </NavLink>
 
             <NavLink
@@ -169,7 +171,7 @@ function App() {
               }
             >
               <ShieldCheck size={20} />
-              Akıllı Sözleşmeler
+              {t('smart_contracts')}
             </NavLink>
 
             <NavLink
@@ -183,7 +185,7 @@ function App() {
               }
             >
               <AlertTriangle size={20} />
-              AI Anomalileri
+              {t('ai_anomalies')}
             </NavLink>
             <NavLink
               to="/settings"
@@ -196,7 +198,7 @@ function App() {
               }
             >
               <SettingsIcon size={20} />
-              Ayarlar
+              {t('settings')}
             </NavLink>
           </nav>
 
@@ -204,7 +206,7 @@ function App() {
             <div
               className={`p-4 rounded-xl border text-center ${isNetworkUp ? "bg-slate-800/50 border-slate-700" : "bg-rose-900/20 border-rose-800/50"}`}
             >
-              <p className="text-xs text-slate-400 mb-2">Ağ Durumu</p>
+              <p className="text-xs text-slate-400 mb-2">{t('network_status')}</p>
               <div
                 className={`flex items-center justify-center gap-2 text-sm font-bold ${isNetworkUp ? "text-emerald-400" : "text-rose-500"}`}
               >
@@ -216,7 +218,7 @@ function App() {
                     className={`relative inline-flex rounded-full h-3 w-3 ${isNetworkUp ? "bg-emerald-500" : "bg-rose-600"}`}
                   ></span>
                 </span>
-                {isNetworkUp ? "SİSTEM AKTİF" : "SİSTEM KAPALI"}
+                {isNetworkUp ? t('system_active') : t('system_offline')}
               </div>
             </div>
 
@@ -224,24 +226,52 @@ function App() {
               onClick={handleLogout}
               className="w-full flex items-center justify-center gap-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 py-3 rounded-xl transition-colors font-semibold"
             >
-              <LogOut size={18} /> Çıkış Yap
+              <LogOut size={18} /> {t('logout')}
             </button>
           </div>
         </aside>
 
         {/* Ana İçerik Alanı */}
-        <main className="flex-1 overflow-y-auto relative z-10 p-8 custom-scrollbar">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/documents" element={<Documents auth={auth} />} />
-            <Route path="/contracts" element={<Contracts auth={auth} />} />
-            <Route path="/anomalies" element={<Anomalies />} />
-            <Route
-              path="/settings"
-              element={<Settings auth={auth} setAuth={setAuth} />}
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+        <main className="flex-1 overflow-y-auto relative z-10 p-8 custom-scrollbar flex flex-col">
+          {/* Top Bar / Language Selector */}
+          <div className="flex justify-end items-center mb-6">
+            <div className="flex bg-slate-800/40 border border-slate-700/50 rounded-xl p-1">
+              <button
+                onClick={() => changeLang('TR')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  lang === 'TR'
+                    ? 'bg-blue-500 text-white shadow-md'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                TR
+              </button>
+              <button
+                onClick={() => changeLang('EN')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  lang === 'EN'
+                    ? 'bg-blue-500 text-white shadow-md'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                EN
+              </button>
+            </div>
+          </div>
+
+          <div className="flex-1">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/documents" element={<Documents auth={auth} />} />
+              <Route path="/contracts" element={<Contracts auth={auth} />} />
+              <Route path="/anomalies" element={<Anomalies />} />
+              <Route
+                path="/settings"
+                element={<Settings auth={auth} setAuth={setAuth} />}
+              />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </div>
         </main>
       </div>
     </Router>

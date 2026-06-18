@@ -3,13 +3,29 @@ from sklearn.ensemble import IsolationForest
 
 class AnomalyDetector:
     def __init__(self):
-        # We define a contamination rate of 10%
+        import os
+        import pickle
+        
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(current_dir, "models", "anomaly_detector.pkl")
+        
+        if os.path.exists(model_path):
+            try:
+                with open(model_path, "rb") as f:
+                    self.model = pickle.load(f)
+                print(f"   [AI] Anomali tespiti modeli diskten başarıyla yüklendi: {model_path}")
+                return
+            except Exception as e:
+                print(f"   [AI] Model yüklenirken hata oluştu: {e}. Fallback eğitime geçiliyor.")
+
+        # Fallback in-memory training
         self.model = IsolationForest(contamination=0.1, random_state=42)
         # Generate representative normal transaction amounts (e.g. from 1000 to 50000)
         np.random.seed(42)
         normal_amounts = np.random.exponential(scale=15000, size=150) + 1000
         self.X_train = normal_amounts.reshape(-1, 1)
         self.model.fit(self.X_train)
+        print("   [AI] Anomali tespiti modeli in-memory olarak eğitildi (Fallback).")
 
     def detect_anomaly(self, amount: float) -> dict:
         # Reshape input to 2D array for scikit-learn

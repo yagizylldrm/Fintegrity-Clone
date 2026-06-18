@@ -41,6 +41,7 @@ backend/__pycache__/
 backend/app/__pycache__/
 backend/app/api/routes/__pycache__/
 backend/app/ai_module/__pycache__/
+backend/app/ai_module/models/
 *.pyc
 *.pyo
 *.pyd

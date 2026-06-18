@@ -21,6 +21,7 @@ Bu staj çalışması kapsamında proje, **Basit bir Mock/Demo prototipinden, ge
 ### 3. Yapay Zeka & Anomali Tespiti (Scikit-Learn)
 * **IsolationForest Modeli:** Harcama limitleri ve işlem hacimlerini analiz ederek anormallikleri tespit eden ML modeli.
 * **TF-IDF + LogisticRegression:** Belge içerik metinlerinden tür (Fatura, İrsaliye, Sözleşme) tespiti yapan sınıflandırıcı.
+* **Yapay Zeka Eğitim Hattı (ML Pipeline):** Modellerin yerel CSV verileri ile eğitilmesi, pickle dosyası olarak kaydedilmesi ve sunucu başlatılırken diskten yüklenmesi. Model dosyalarının eksik olması durumunda in-memory eğitim ile kesintisiz çalışma.
 * **Açıklanabilir AI (XAI):** Tespit edilen anomalinin nedenini (gerekçe) ve önerilen aksiyonu açıklayan akıllı çıktı mekanizması.
 
 ### 4. Profesyonel Altyapı & Testler
@@ -28,6 +29,7 @@ Bu staj çalışması kapsamında proje, **Basit bir Mock/Demo prototipinden, ge
 * **Merkezi Config & Env:** Tüm localhost bağlantıları merkezi `config.js` ve `.env` dosyalarına taşınarak esnek deployment altyapısı kurulmuştur.
 * **Makefile Altyapısı:** Kurulum, test ve geliştirme süreçlerini tek komutla çalıştıran script otomasyonu.
 * **API Test Suite:** FastAPI API endpoint'lerini otomatik olarak test eden 10 adet pytest test senaryosu.
+* **Çoklu Dil Desteği (Language Switcher):** Giriş ekranı dahil tüm uygulama arayüzünün, alertlerin, log mesajlarının, grafik gün isimlerinin, modalların ve CSV çıktılarının TR/EN dillerinde dinamik yerelleştirilmesi.
 
 ---
 
@@ -36,7 +38,7 @@ Bu staj çalışması kapsamında proje, **Basit bir Mock/Demo prototipinden, ge
 ### Kısa Vade (1 - 3 Ay)
 1. **Veritabanı Migrasyonu:** SQLite yerine üretim ortamına hazır PostgreSQL entegrasyonu ve schema migrasyonları için Alembic kullanımı.
 2. **Dockerization:** Tüm servislerin (FastAPI, React, Hardhat Node) `docker-compose.yml` ile tek komutla ayağa kaldırılabilmesi.
-3. **Yapay Zeka Eğitim Hattı (Pipeline):** Modellerin yeni gelen fatura verileriyle periyodik olarak otomatik eğitilmesini sağlayacak bir MLflow veya Kubeflow hattı.
+3. **Audit Log İnceleme Arayüzü:** Yönetici panelinde, backend tarafında tutulan denetim loglarının (Audit Logs) filtrelenerek görselleştirileceği gelişmiş bir izleme sayfası tasarımı.
 
 ### Orta Vade (3 - 6 Ay)
 1. **Özel Blockchain Ağı (Private Consortium Network):** Hardhat yerel node'u yerine Hyperledger Fabric veya özel bir Ethereum PoA (Proof of Authority) ağ geçidi kurulumu.

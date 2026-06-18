@@ -1,19 +1,21 @@
 # 🛡️ Fintegrity — Blockchain ve Yapay Zeka Destekli Finansal Entegrasyon Platformu
 
-> Staj projesi kapsamında geliştirilmiş prototip seviyesinde bir finansal entegrasyon platformu.
+> Staj projesi kapsamında geliştirilmiş MVP/prototip seviyesinde bir finansal entegrasyon platformu.
 
 ## 📋 Proje Hakkında
 
 Fintegrity, e-dönüşüm süreçlerini (e-Fatura, e-İrsaliye, e-Sözleşme) blockchain teknolojisi ile güvence altına alan ve yapay zeka ile anomali tespiti yapan bir platformdur.
 
 ### Temel Özellikler
-- 📄 **e-Dönüşüm Belge Yönetimi** — e-Fatura, e-İrsaliye, e-Sözleşme, e-Makbuz
-- 🔗 **Blockchain Kayıt & Doğrulama** — Belge hash'leri Ethereum uyumlu zincire yazılır
-- 📜 **Akıllı Sözleşme İş Akışı** — Oluştur → Onayla → Tamamla lifecycle
-- 🤖 **AI Anomali Tespiti** — IsolationForest ile şüpheli işlem tespiti
-- 📊 **AI Doküman Sınıflandırma** — TF-IDF + LogisticRegression ile otomatik sınıflandırma
-- 🔐 **JWT Tabanlı Yetkilendirme** — Admin ve kullanıcı rolleri
-- 📈 **Canlı Dashboard** — Gerçek zamanlı istatistikler ve blockchain TPS
+- 📄 **e-Dönüşüm Belge Yönetimi** — e-Fatura, e-İrsaliye, e-Sözleşme, e-Makbuz yönetimi
+- 🔗 **Blockchain Kayıt & Doğrulama** — Belge hash'leri Ethereum uyumlu zincire yazılır ve "Zincirde Doğrula" butonu ile gerçek zamanlı doğrulanır
+- 📜 **Akıllı Sözleşme İş Akışı** — Oluştur → Onayla → Tamamla lifecycle akışı
+- 🤖 **AI Anomali Tespiti & Açıklanabilirlik (XAI)** — IsolationForest ile şüpheli işlem tespiti, gerekçe ve aksiyon önerileri
+- 📊 **AI Doküman Sınıflandırma** — TF-IDF + LogisticRegression ile otomatik metin sınıflandırma
+- 🧠 **Yapay Zeka Eğitim Hattı (ML Pipeline)** — Modellerin yerel CSV verileri ile eğitilmesi, diskte `.pkl` formatında saklanması veya in-memory fallback ile yüklenmesi (`make train-ai`)
+- 🔐 **JWT Tabanlı Yetkilendirme & Rol İzolasyonu** — Admin ve kullanıcı rolleri ile veri ve yetki izolasyonu (RBAC)
+- 📈 **Canlı Dashboard** — Gerçek zamanlı istatistikler, blockchain TPS ve detaylı ağ metrikleri
+- 🌐 **Çoklu Dil Desteği (TR/EN)** — Dinamik TR/EN dil seçici ile giriş ekranı dahil tüm arayüz, modallar, formlar, alert bildirimleri ve grafiklerin yerelleştirilmesi
 
 ## 🏗️ Mimari
 
@@ -21,12 +23,14 @@ Fintegrity, e-dönüşüm süreçlerini (e-Fatura, e-İrsaliye, e-Sözleşme) bl
 fintegrity-staj/
 ├── backend/                 # FastAPI Backend (Python)
 │   ├── app/
-│   │   ├── ai_module/       # ML modelleri (IsolationForest, TF-IDF)
+│   │   ├── ai_module/       # ML modelleri, CSV veri kümeleri ve eğitim hattı (train.py)
+│   │   │   ├── models/      # Kaydedilmiş model pickle dosyaları (git-ignored)
+│   │   │   └── sample_data/ # Model eğitimi için sentetik/örnek veri kümeleri
 │   │   ├── api/
-│   │   │   └── routes/      # API endpoint'leri
+│   │   │   └── routes/      # API endpoint'leri (auth, documents, contracts, anomalies, stats, audit)
 │   │   ├── blockchain_client.py  # Web3.py entegrasyonu
 │   │   ├── config.py        # Environment config
-│   │   └── database.py      # SQLAlchemy modelleri
+│   │   └── database.py      # SQLAlchemy modelleri ve AuditLog tanımları
 │   ├── main.py              # FastAPI uygulama giriş noktası
 │   ├── requirements.txt     # Python bağımlılıkları
 │   └── .env                 # Environment variables
@@ -34,7 +38,7 @@ fintegrity-staj/
 │   ├── contracts/
 │   │   ├── FintegrityCore.sol      # Belge hash kayıt kontratı
 │   │   └── SmartAgreements.sol     # Akıllı sözleşme kontratı
-│   ├── test/                # Hardhat test suite (9 tests)
+│   ├── test/                # Hardhat test suite (9 test)
 │   └── scripts/deploy.ts    # Deployment script
 ├── fintegrity-frontend/     # React Frontend (Vite)
 │   └── src/
@@ -63,7 +67,7 @@ fintegrity-staj/
 
 ### 1. Repoyu Klonla
 ```bash
-git clone https://github.com/yagizylldrm/Fintegrity-Clone.git
+git clone https://github.com/yagizylldrm/Fintegrity-Clone
 cd Fintegrity-Clone
 ```
 
@@ -118,30 +122,49 @@ cp backend/.env.example backend/.env
 ```
 `.env` dosyasını düzenleyip deploy çıktısındaki adresleri girin.
 
-### 6. Backend'i Başlat
+### 6. AI Modellerini Eğit (İsteğe Bağlı)
+Yapay Zeka modellerini yerel CSV dosyalarıyla eğitip diske kaydetmek için:
+```bash
+make train-ai
+# veya: ./fintegrity.sh train-ai
+```
+*(Modeller eğitilmese bile backend ilk başlatıldığında in-memory eğitim fallback mekanizması sayesinde otomatik olarak eğitilir ve çalışır.)*
+
+### 7. Backend'i Başlat
 ```bash
 make dev-backend
 # veya: cd backend && source venv/bin/activate && uvicorn main:app --reload
 ```
 
-### 7. Frontend'i Başlat
+### 8. Frontend'i Başlat
 ```bash
 make dev-frontend
 # veya: cd fintegrity-frontend && npm run dev
 ```
 
-### 8. Uygulamaya Eriş
+### 9. Uygulamaya Eriş
 - **Frontend**: http://localhost:5173
 - **Backend API**: http://localhost:8000
 - **API Docs**: http://localhost:8000/docs
 
-### Ekstra
-Yerel ağı kolaylıkla yönetmek için şu komutları kullanabilirsiniz:
+### 💡 Ekstra: fintegrity.sh Yönetim Aracı
+Projeyi arka planda kolayca yönetmek, durumunu sorgulamak ve logları takip etmek için merkezi `fintegrity.sh` kabuk betiğini (shell script) kullanabilirsiniz:
+
 ```bash
-./fintegrity.sh start  # Yerel ağı başlatır
-./fintegrity.sh stop   # Yerel ağ servislerini durdurur
-./fintegrity.sh status # Yerel ağın ve servislerin durumunu gösterir
-./fintegrity.sh logs   # Gerçek zamanlı olarak logları gösterir
+# Servislerin durumunu ve port durumlarını raporlar
+./fintegrity.sh status
+
+# Tüm servisleri (Blockchain Node, Backend ve Frontend) arka planda başlatır ve kontratları deploy eder
+./fintegrity.sh start
+
+# Servislerin log çıktılarını canlı olarak terminale yazdırır
+./fintegrity.sh logs
+
+# Yapay zeka modellerini yerel CSV veri kümeleriyle eğitir
+./fintegrity.sh train-ai
+
+# Çalışan tüm arka plan servislerini ve portları temizleyip güvenli şekilde durdurur
+./fintegrity.sh stop
 ```
 
 ## 👤 Demo Kullanıcılar
@@ -171,4 +194,4 @@ make lint
 
 ## 📝 Lisans
 
-Bu proje ARD Bilişim bünyesinde staj projesi olarak geliştirilmiştir.
+Bu proje ARD Grup Bilişim bünyesinde staj projesi olarak geliştirilmiştir.

@@ -13,12 +13,13 @@ mkdir -p "$LOG_DIR"
 
 show_help() {
     echo "🛡️ Fintegrity MVP Yönetim Aracı"
-    echo "Kullanım: $0 {start|stop|status|logs}"
+    echo "Kullanım: $0 {start|stop|status|logs|train-ai}"
     echo "---------------------------------------------"
-    echo "  start   : Tüm servisleri (Blockchain, Backend, Frontend) arka planda başlatır."
-    echo "  stop    : Çalışan tüm platform servislerini güvenli bir şekilde durdurur."
-    echo "  status  : Servislerin çalışma ve port durumlarını raporlar."
-    echo "  logs    : Servislerin güncel log çıktılarını ekrana yazdırır."
+    echo "  start     : Tüm servisleri (Blockchain, Backend, Frontend) arka planda başlatır."
+    echo "  stop      : Çalışan tüm platform servislerini güvenli bir şekilde durdurur."
+    echo "  status    : Servislerin çalışma ve port durumlarını raporlar."
+    echo "  logs      : Servislerin güncel log çıktılarını ekrana yazdırır."
+    echo "  train-ai  : AI modellerini (Anomali Tespiti & Doküman Sınıflandırma) eğitir."
 }
 
 start_services() {
@@ -164,6 +165,15 @@ show_logs() {
     tail -f "$LOG_DIR/blockchain.log" "$LOG_DIR/backend.log" "$LOG_DIR/frontend.log" 2>/dev/null
 }
 
+train_ai() {
+    echo "🤖 AI Modelleri eğitiliyor..."
+    echo "---------------------------------------------"
+    cd "$DIR/backend"
+    source venv/bin/activate
+    python app/ai_module/train.py
+    echo "---------------------------------------------"
+}
+
 case "$1" in
     start)
         start_services
@@ -176,6 +186,9 @@ case "$1" in
         ;;
     logs)
         show_logs
+        ;;
+    train-ai)
+        train_ai
         ;;
     *)
         show_help

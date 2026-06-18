@@ -3,8 +3,10 @@ import { motion } from 'framer-motion';
 import { Settings as SettingsIcon, Key, UserPlus, CheckCircle, AlertTriangle, Palette } from 'lucide-react';
 import axios from 'axios';
 import { BACKEND_URL } from '../config';
+import { useLanguage } from '../LanguageContext';
 
 export default function Settings({ auth, setAuth }) {
+  const { lang, t } = useLanguage();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [passMsg, setPassMsg] = useState({ text: '', type: '' });
@@ -19,19 +21,19 @@ export default function Settings({ auth, setAuth }) {
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
-    setPassMsg({ text: 'İşleniyor...', type: 'info' });
+    setPassMsg({ text: t('processing'), type: 'info' });
     try {
-      const res = await axios.post(`${BACKEND_URL}/api/auth/change-password`, {
+      await axios.post(`${BACKEND_URL}/api/auth/change-password`, {
         username: auth.username,
         old_password: oldPassword,
         new_password: newPassword
       });
-      setPassMsg({ text: res.data.message, type: 'success' });
+      setPassMsg({ text: t('password_change_success'), type: 'success' });
       setOldPassword('');
       setNewPassword('');
     } catch (err) {
       setPassMsg({ 
-        text: err.response?.data?.detail || 'Şifre güncellenirken bir hata oluştu.', 
+        text: err.response?.data?.detail || t('password_change_error'), 
         type: 'error' 
       });
     }
@@ -39,22 +41,22 @@ export default function Settings({ auth, setAuth }) {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setRegMsg({ text: 'Kayıt yapılıyor...', type: 'info' });
+    setRegMsg({ text: t('user_registering'), type: 'info' });
     try {
-      const res = await axios.post(`${BACKEND_URL}/api/auth/register`, {
+      await axios.post(`${BACKEND_URL}/api/auth/register`, {
         admin_username: auth.username,
         admin_password: adminPassword,
         new_username: newUsername,
         new_password: newUserPassword,
         role: newUserRole
       });
-      setRegMsg({ text: res.data.message, type: 'success' });
+      setRegMsg({ text: t('user_register_success'), type: 'success' });
       setNewUsername('');
       setNewUserPassword('');
       setAdminPassword('');
     } catch (err) {
       setRegMsg({ 
-        text: err.response?.data?.detail || 'Kullanıcı eklenirken bir hata oluştu.', 
+        text: err.response?.data?.detail || t('user_register_error'), 
         type: 'error' 
       });
     }
@@ -62,7 +64,7 @@ export default function Settings({ auth, setAuth }) {
 
   const handleThemeChange = async (selectedTheme) => {
     try {
-      setThemeMsg({ text: 'Tema güncelleniyor...', type: 'info' });
+      setThemeMsg({ text: t('theme_updating'), type: 'info' });
       await axios.put(`${BACKEND_URL}/api/auth/theme`, {
         username: auth.username,
         theme: selectedTheme
@@ -71,10 +73,10 @@ export default function Settings({ auth, setAuth }) {
       if(setAuth) {
         setAuth({ ...auth, theme: selectedTheme });
       }
-      setThemeMsg({ text: 'Tema başarıyla güncellendi.', type: 'success' });
+      setThemeMsg({ text: t('theme_success'), type: 'success' });
       setTimeout(() => setThemeMsg({ text: '', type: '' }), 3000);
     } catch (_) {
-      setThemeMsg({ text: 'Tema güncellenirken bir hata oluştu.', type: 'error' });
+      setThemeMsg({ text: t('theme_error'), type: 'error' });
     }
   };
 
@@ -87,16 +89,16 @@ export default function Settings({ auth, setAuth }) {
       <div>
         <h1 className="text-3xl font-black text-white flex items-center gap-3 mb-2">
           <SettingsIcon className="text-blue-400" size={32} />
-          Ayarlar
+          {t('settings')}
         </h1>
-        <p className="text-slate-400">Güvenlik ve hesap yönetimi işlemlerinizi buradan yapabilirsiniz.</p>
+        <p className="text-slate-400">{t('settings_panel_desc')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Şifre Değiştirme */}
         <div className="glass-panel p-6 rounded-2xl border border-slate-700/50">
           <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-            <Key size={20} className="text-blue-400" /> Şifre Değiştir
+            <Key size={20} className="text-blue-400" /> {lang === 'TR' ? 'Şifre Değiştir' : 'Change Password'}
           </h2>
           <form onSubmit={handlePasswordChange} className="space-y-4">
             {passMsg.text && (
@@ -106,7 +108,7 @@ export default function Settings({ auth, setAuth }) {
               </div>
             )}
             <div>
-              <label className="text-xs text-slate-400 font-bold uppercase mb-2 block">Mevcut Şifre</label>
+              <label className="text-xs text-slate-400 font-bold uppercase mb-2 block">{t('current_password')}</label>
               <input 
                 type="password" 
                 required
@@ -116,7 +118,7 @@ export default function Settings({ auth, setAuth }) {
               />
             </div>
             <div>
-              <label className="text-xs text-slate-400 font-bold uppercase mb-2 block">Yeni Şifre</label>
+              <label className="text-xs text-slate-400 font-bold uppercase mb-2 block">{t('new_password_label')}</label>
               <input 
                 type="password" 
                 required
@@ -126,7 +128,7 @@ export default function Settings({ auth, setAuth }) {
               />
             </div>
             <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-colors">
-              Şifreyi Güncelle
+              {t('update_password_btn')}
             </button>
           </form>
         </div>
@@ -134,7 +136,7 @@ export default function Settings({ auth, setAuth }) {
         {/* Tema Seçimi */}
         <div className="glass-panel p-6 rounded-2xl border border-slate-700/50">
           <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-            <Palette size={20} className="text-purple-400" /> Görünüm Ayarları
+            <Palette size={20} className="text-purple-400" /> {t('appearance_settings')}
           </h2>
           {themeMsg.text && (
             <div className={`p-3 mb-4 rounded-xl text-sm ${themeMsg.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : themeMsg.type === 'error' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}`}>
@@ -147,8 +149,8 @@ export default function Settings({ auth, setAuth }) {
               className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${auth.theme === 'current' ? 'bg-purple-600/20 border-purple-500 text-purple-300' : 'bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-800'}`}
             >
               <div className="flex flex-col items-start">
-                <span className="font-bold text-white">Mevcut Tema</span>
-                <span className="text-xs opacity-70">Glassmorphism & Koyu Mod (Varsayılan)</span>
+                <span className="font-bold text-white">{t('theme_current')}</span>
+                <span className="text-xs opacity-70">{t('theme_default_desc')}</span>
               </div>
               {auth.theme === 'current' && <CheckCircle size={20} />}
             </button>
@@ -157,8 +159,8 @@ export default function Settings({ auth, setAuth }) {
               className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${auth.theme === 'dark' ? 'bg-purple-600/20 border-purple-500 text-purple-300' : 'bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-800'}`}
             >
               <div className="flex flex-col items-start">
-                <span className="font-bold text-white">Tam Karanlık</span>
-                <span className="text-xs opacity-70">Göz yormayan saf koyu tonlar</span>
+                <span className="font-bold text-white">{t('theme_dark')}</span>
+                <span className="text-xs opacity-70">{t('theme_dark_desc')}</span>
               </div>
               {auth.theme === 'dark' && <CheckCircle size={20} />}
             </button>
@@ -167,8 +169,8 @@ export default function Settings({ auth, setAuth }) {
               className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${auth.theme === 'light' ? 'bg-purple-600/20 border-purple-500 text-purple-300' : 'bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-800'}`}
             >
               <div className="flex flex-col items-start">
-                <span className="font-bold text-white">Aydınlık</span>
-                <span className="text-xs opacity-70">Ferah ve parlak görünüm</span>
+                <span className="font-bold text-white">{t('theme_light')}</span>
+                <span className="text-xs opacity-70">{t('theme_light_desc')}</span>
               </div>
               {auth.theme === 'light' && <CheckCircle size={20} />}
             </button>
@@ -179,7 +181,7 @@ export default function Settings({ auth, setAuth }) {
         {auth.role === 'admin' && (
           <div className="glass-panel p-6 rounded-2xl border border-slate-700/50">
             <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-              <UserPlus size={20} className="text-emerald-400" /> Yeni Kullanıcı Ekle
+              <UserPlus size={20} className="text-emerald-400" /> {t('add_new_user')}
             </h2>
             <form onSubmit={handleRegister} className="space-y-4">
               {regMsg.text && (
@@ -190,7 +192,7 @@ export default function Settings({ auth, setAuth }) {
               )}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-slate-400 font-bold uppercase mb-2 block">Kullanıcı Adı</label>
+                  <label className="text-xs text-slate-400 font-bold uppercase mb-2 block">{t('username')}</label>
                   <input 
                     type="text" 
                     required
@@ -200,19 +202,19 @@ export default function Settings({ auth, setAuth }) {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-400 font-bold uppercase mb-2 block">Kullanıcı Rolü</label>
+                  <label className="text-xs text-slate-400 font-bold uppercase mb-2 block">{t('user_role')}</label>
                   <select 
                     value={newUserRole}
                     onChange={(e) => setNewUserRole(e.target.value)}
                     className="w-full bg-slate-800/50 border border-slate-700 text-white px-4 py-2 rounded-xl focus:border-emerald-500 outline-none"
                   >
-                    <option value="user">Standart Kullanıcı</option>
-                    <option value="admin">Yönetici (Admin)</option>
+                    <option value="user">{t('standard_user')}</option>
+                    <option value="admin">{t('admin_user')}</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className="text-xs text-slate-400 font-bold uppercase mb-2 block">Kullanıcı Şifresi</label>
+                <label className="text-xs text-slate-400 font-bold uppercase mb-2 block">{t('user_password')}</label>
                 <input 
                   type="password" 
                   required
@@ -222,17 +224,17 @@ export default function Settings({ auth, setAuth }) {
                 />
               </div>
               <div className="pt-4 border-t border-slate-700/50 mt-4">
-                <label className="text-xs text-emerald-400 font-bold uppercase mb-2 block">İşlem Onayı İçin Kendi Şifreniz</label>
+                <label className="text-xs text-emerald-400 font-bold uppercase mb-2 block">{t('admin_confirm_password_label')}</label>
                 <input 
                   type="password" 
                   required
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
-                  placeholder="Admin Şifreniz"
+                  placeholder={t('admin_password_placeholder')}
                   className="w-full bg-slate-800/50 border border-slate-700 text-white px-4 py-2 rounded-xl focus:border-emerald-500 outline-none mb-4"
                 />
                 <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition-colors">
-                  Kullanıcıyı Ekle
+                  {t('add_user_btn')}
                 </button>
               </div>
             </form>
