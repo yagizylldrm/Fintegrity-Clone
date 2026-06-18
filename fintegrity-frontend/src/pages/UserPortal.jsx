@@ -66,6 +66,7 @@ export default function UserPortal({ username, onLogout, auth, setAuth }) {
           {/* Language Switcher */}
           <div className="flex bg-slate-800/40 border border-slate-700/50 rounded-xl p-1 text-xs">
             <button
+              type="button"
               onClick={() => changeLang('TR')}
               className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
                 lang === 'TR'
@@ -76,6 +77,7 @@ export default function UserPortal({ username, onLogout, auth, setAuth }) {
               TR
             </button>
             <button
+              type="button"
               onClick={() => changeLang('EN')}
               className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
                 lang === 'EN'
@@ -181,7 +183,7 @@ export default function UserPortal({ username, onLogout, auth, setAuth }) {
                       value={recipient}
                       onChange={(e) => setRecipient(e.target.value)}
                       required
-                      placeholder="TR09 0006 1000 0000 0123 4567 89 veya 0x71C...3B2"
+                      placeholder={lang === 'TR' ? "TR09 0006 1000 0000 0123 4567 89 veya 0x71C...3B2" : "TR09 0006 1000 0000 0123 4567 89 or 0x71C...3B2"}
                       className="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-white outline-none focus:border-blue-500 transition-colors font-mono"
                     />
                   </div>

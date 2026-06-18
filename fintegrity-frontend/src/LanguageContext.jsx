@@ -292,7 +292,21 @@ const translations = {
     user_password: "Kullanıcı Şifresi",
     admin_confirm_password_label: "İşlem Onayı İçin Kendi Şifreniz",
     admin_password_placeholder: "Admin Şifreniz",
-    add_user_btn: "Kullanıcıyı Ekle"
+    add_user_btn: "Kullanıcıyı Ekle",
+    landing_hero_title: "Finansal Güvencede Yeni Nesil Blokzincir & Yapay Zeka Ağı",
+    landing_hero_subtitle: "e-Dönüşüm belgelerinizi EVM uyumlu akıllı sözleşmelerle mühürleyin, şüpheli işlemleri yapay zeka modelleriyle anında tespit edin.",
+    landing_get_started: "Sisteme Giriş Yap",
+    landing_explore_features: "Özellikleri Keşfet",
+    landing_feature_1_title: "Blokzincir Güvencesi",
+    landing_feature_1_desc: "Tüm fatura, irsaliye ve makbuzların kriptografik özetleri (hash) zincire kaydedilir ve geriye dönük değiştirilemez hale gelir.",
+    landing_feature_2_title: "Yapay Zeka Denetimi",
+    landing_feature_2_desc: "IsolationForest makine öğrenmesi algoritmaları finansal verilerinizi tarar, anomalileri ve risk faktörlerini anında raporlar.",
+    landing_feature_3_title: "Akıllı Mutabakatlar",
+    landing_feature_3_desc: "Tedarikçiler ve iş ortakları arasındaki dijital anlaşmalar, Ethereum akıllı sözleşmeleri üzerinden otomatik olarak doğrulanır ve onaylanır.",
+    landing_stats_title: "Fintegrity Canlı Ağ İstatistikleri",
+    landing_stats_desc: "Platform üzerindeki işlemler ve blokzincir durum bilgileri anlık olarak güncellenmektedir.",
+    landing_contact_support: "İletişim & Destek",
+    back_to_home: "Ana Sayfaya Dön"
   },
   EN: {
     // Sidebar & Navigation
@@ -575,7 +589,21 @@ const translations = {
     user_password: "User Password",
     admin_confirm_password_label: "Your Own Password for Approval",
     admin_password_placeholder: "Admin Password",
-    add_user_btn: "Add User"
+    add_user_btn: "Add User",
+    landing_hero_title: "Next-Gen Blockchain & AI Network in Financial Assurance",
+    landing_hero_subtitle: "Seal your e-transformation documents with EVM-compatible smart contracts, and detect suspicious transactions instantly using machine learning models.",
+    landing_get_started: "Access System",
+    landing_explore_features: "Explore Features",
+    landing_feature_1_title: "Blockchain Security",
+    landing_feature_1_desc: "Cryptographic hashes of all invoices, waybills, and receipts are recorded on the chain, making them immutably tamper-proof.",
+    landing_feature_2_title: "AI Auditing & Detection",
+    landing_feature_2_desc: "IsolationForest machine learning algorithms scan your financial records and report anomalies and risk factors in real-time.",
+    landing_feature_3_title: "Smart Settlements",
+    landing_feature_3_desc: "Digital agreements between suppliers and business partners are automatically verified and approved via Ethereum smart contracts.",
+    landing_stats_title: "Fintegrity Live Network Statistics",
+    landing_stats_desc: "Transactions and blockchain status metrics on the platform are updated in real-time.",
+    landing_contact_support: "Contact & Support",
+    back_to_home: "Back to Home Page"
   }
 };
 

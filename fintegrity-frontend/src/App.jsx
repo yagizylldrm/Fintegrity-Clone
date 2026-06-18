@@ -26,12 +26,14 @@ import Anomalies from "./pages/Anomalies";
 import Login from "./pages/Login";
 import UserPortal from "./pages/UserPortal";
 import Settings from "./pages/Settings";
+import Landing from "./pages/Landing";
 import { useLanguage } from "./LanguageContext";
 
 function App() {
   const { lang, changeLang, t } = useLanguage();
   const [auth, setAuth] = useState(null);
   const [isNetworkUp, setIsNetworkUp] = useState(true);
+  const [viewMode, setViewMode] = useState('landing');
 
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
@@ -80,11 +82,15 @@ function App() {
     localStorage.removeItem('auth_token');
     delete axios.defaults.headers.common['Authorization'];
     setAuth(null);
+    setViewMode('landing');
   };
 
-  // Eğer giriş yapılmamışsa Login sayfasını göster
+  // Eğer giriş yapılmamışsa Landing veya Login sayfasını göster
   if (!auth) {
-    return <Login onLogin={handleLogin} />;
+    if (viewMode === 'landing') {
+      return <Landing onNavigateToLogin={() => setViewMode('login')} />;
+    }
+    return <Login onLogin={handleLogin} onBackToLanding={() => setViewMode('landing')} />;
   }
 
   // Eğer giriş yapan kişi standart bir kullanıcı ise sadece User Portal'ı göster

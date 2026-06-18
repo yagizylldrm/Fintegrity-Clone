@@ -5,7 +5,7 @@ import axios from 'axios';
 import { BACKEND_URL } from '../config';
 import { useLanguage } from '../LanguageContext';
 
-export default function Login({ onLogin }) {
+export default function Login({ onLogin, onBackToLanding }) {
   const { lang, changeLang, t } = useLanguage();
   const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [username, setUsername] = useState('');
@@ -227,7 +227,7 @@ export default function Login({ onLogin }) {
                   )}
                 </button>
 
-                <div className="text-center pt-2">
+                <div className="text-center pt-2 flex flex-col gap-2 items-center">
                   <button 
                     type="button" 
                     onClick={() => {
@@ -239,6 +239,15 @@ export default function Login({ onLogin }) {
                   >
                     {t('create_new_account')}
                   </button>
+                  {onBackToLanding && (
+                    <button 
+                      type="button" 
+                      onClick={onBackToLanding}
+                      className="text-xs font-semibold text-slate-500 hover:text-slate-300 transition-colors mt-1"
+                    >
+                      ← {t('back_to_home')}
+                    </button>
+                  )}
                 </div>
               </motion.form>
             ) : (
@@ -313,7 +322,7 @@ export default function Login({ onLogin }) {
                   )}
                 </button>
 
-                <div className="text-center pt-2">
+                <div className="text-center pt-2 flex flex-col gap-2 items-center">
                   <button 
                     type="button" 
                     onClick={() => {
@@ -325,6 +334,15 @@ export default function Login({ onLogin }) {
                   >
                     {t('login_prompt')}
                   </button>
+                  {onBackToLanding && (
+                    <button 
+                      type="button" 
+                      onClick={onBackToLanding}
+                      className="text-xs font-semibold text-slate-500 hover:text-slate-300 transition-colors mt-1"
+                    >
+                      ← {t('back_to_home')}
+                    </button>
+                  )}
                 </div>
               </motion.form>
             )}

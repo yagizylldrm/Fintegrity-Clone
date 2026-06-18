@@ -7,15 +7,16 @@
 Fintegrity, e-dönüşüm süreçlerini (e-Fatura, e-İrsaliye, e-Sözleşme) blockchain teknolojisi ile güvence altına alan ve yapay zeka ile anomali tespiti yapan bir platformdur.
 
 ### Temel Özellikler
-- 📄 **e-Dönüşüm Belge Yönetimi** — e-Fatura, e-İrsaliye, e-Sözleşme, e-Makbuz yönetimi
-- 🔗 **Blockchain Kayıt & Doğrulama** — Belge hash'leri Ethereum uyumlu zincire yazılır ve "Zincirde Doğrula" butonu ile gerçek zamanlı doğrulanır
-- 📜 **Akıllı Sözleşme İş Akışı** — Oluştur → Onayla → Tamamla lifecycle akışı
-- 🤖 **AI Anomali Tespiti & Açıklanabilirlik (XAI)** — IsolationForest ile şüpheli işlem tespiti, gerekçe ve aksiyon önerileri
-- 📊 **AI Doküman Sınıflandırma** — TF-IDF + LogisticRegression ile otomatik metin sınıflandırma
-- 🧠 **Yapay Zeka Eğitim Hattı (ML Pipeline)** — Modellerin yerel CSV verileri ile eğitilmesi, diskte `.pkl` formatında saklanması veya in-memory fallback ile yüklenmesi (`make train-ai`)
-- 🔐 **JWT Tabanlı Yetkilendirme & Rol İzolasyonu** — Admin ve kullanıcı rolleri ile veri ve yetki izolasyonu (RBAC)
-- 📈 **Canlı Dashboard** — Gerçek zamanlı istatistikler, blockchain TPS ve detaylı ağ metrikleri
-- 🌐 **Çoklu Dil Desteği (TR/EN)** — Dinamik TR/EN dil seçici ile giriş ekranı dahil tüm arayüz, modallar, formlar, alert bildirimleri ve grafiklerin yerelleştirilmesi
+- 🏡 **Giriş Öncesi Karşılama / Ana Sayfa (Landing Page)** — Giriş yapmadan önce kullanıcıyı karşılayan, platform özellikleri ve blockchain canlı ağ istatistiklerini (belge sayısı, TPS, anomali vb.) sunan görsel olarak premium giriş kapısı.
+- 📄 **e-Dönüşüm Belge Yönetimi** — e-Fatura, e-İrsaliye, e-Sözleşme, e-Makbuz yönetimi.
+- 🔗 **Blockchain Kayıt & Doğrulama** — Belge hash'leri Ethereum uyumlu zincire yazılır ve "Zincirde Doğrula" butonu ile gerçek zamanlı doğrulanır.
+- 📜 **Akıllı Sözleşme İş Akışı** — Oluştur → Onayla → Tamamla lifecycle akışı.
+- 🤖 **AI Anomali Tespiti & Açıklanabilirlik (XAI)** — IsolationForest ile şüpheli işlem tespiti, gerekçe ve aksiyon önerileri.
+- 📊 **AI Doküman Sınıflandırma** — TF-IDF + LogisticRegression ile otomatik metin sınıflandırma.
+- 🧠 **Yapay Zeka Eğitim Hattı (ML Pipeline)** — Modellerin yerel CSV verileri ile eğitilmesi, diskte `.pkl` formatında saklanması veya in-memory fallback ile yüklenmesi (`make train-ai`).
+- 🔐 **JWT Tabanlı Yetkilendirme & Rol İzolasyonu** — Admin ve kullanıcı rolleri ile veri ve yetki izolasyonu (RBAC).
+- 📈 **Canlı Dashboard** — Gerçek zamanlı istatistikler, blockchain TPS ve detaylı ağ metrikleri.
+- 🌐 **Çoklu Dil Desteği (TR/EN)** — Dinamik TR/EN dil seçici ile karşılama ekranı ve giriş ekranı dahil tüm arayüz, modallar, formlar, alert bildirimleri ve grafiklerin yerelleştirilmesi.
 
 ## 🏗️ Mimari
 
