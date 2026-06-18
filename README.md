@@ -1,6 +1,6 @@
 # 🛡️ Fintegrity — Blockchain ve Yapay Zeka Destekli Finansal Entegrasyon Platformu
 
-> Staj projesi kapsamında geliştirilmiş MVP/prototip seviyesinde bir finansal entegrasyon platformu.
+> Staj projesi kapsamında geliştirilmiş prototip seviyesinde bir finansal entegrasyon platformu.
 
 ## 📋 Proje Hakkında
 
@@ -34,7 +34,7 @@ fintegrity-staj/
 │   ├── contracts/
 │   │   ├── FintegrityCore.sol      # Belge hash kayıt kontratı
 │   │   └── SmartAgreements.sol     # Akıllı sözleşme kontratı
-│   ├── test/                # Hardhat test suite (9 test)
+│   ├── test/                # Hardhat test suite (9 tests)
 │   └── scripts/deploy.ts    # Deployment script
 ├── fintegrity-frontend/     # React Frontend (Vite)
 │   └── src/
