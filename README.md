@@ -135,6 +135,15 @@ make dev-frontend
 - **Backend API**: http://localhost:8000
 - **API Docs**: http://localhost:8000/docs
 
+### Ekstra
+Yerel ağı kolaylıkla yönetmek için şu komutları kullanabilirsiniz:
+```bash
+./fintegrity.sh start  # Yerel ağı başlatır
+./fintegrity.sh stop   # Yerel ağ servislerini durdurur
+./fintegrity.sh status # Yerel ağın ve servislerin durumunu gösterir
+./fintegrity.sh logs   # Gerçek zamanlı olarak logları gösterir
+```
+
 ## 👤 Demo Kullanıcılar
 
 | Kullanıcı | Şifre | Rol | Yetkiler |
