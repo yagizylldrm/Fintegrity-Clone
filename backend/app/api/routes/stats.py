@@ -6,8 +6,8 @@ from datetime import datetime
 
 router = APIRouter()
 
-@router.get("/")
-def get_stats(db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+@router.get("")
+def get_stats(db: Session = Depends(get_db)):
     documents_count = db.query(Document).count()
     
     contracts_count = db.query(Contract).count()
@@ -27,7 +27,7 @@ def get_stats(db: Session = Depends(get_db), current_user = Depends(get_current_
     }
 
 @router.get("/chain-info")
-def get_chain_info(current_user = Depends(get_current_user)):
+def get_chain_info():
     """Blockchain ağ bilgilerini döner."""
     from app.blockchain_client import get_chain_info as _get_chain_info
     return _get_chain_info()

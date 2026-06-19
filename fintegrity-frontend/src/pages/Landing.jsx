@@ -50,7 +50,18 @@ export default function Landing({ onNavigateToLogin }) {
           <span className="text-2xl font-black tracking-tight text-white">FINTEGRITY</span>
         </div>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 sm:gap-6">
+          {/* Blockchain Network Status */}
+          <div className="flex items-center gap-2 bg-slate-800/40 border border-slate-700/50 rounded-2xl px-4 py-2 text-xs text-slate-300 font-medium">
+            <div className={`w-2 h-2 rounded-full ${chainConnected ? 'bg-emerald-400 animate-pulse' : 'bg-rose-500'}`} />
+            <span className="hidden sm:inline">
+              {lang === 'TR' ? 'Blockchain Ağ Durumu:' : 'Blockchain Network Status:'}
+            </span>
+            <span className={chainConnected ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}>
+              {chainConnected ? (lang === 'TR' ? 'Aktif' : 'Active') : (lang === 'TR' ? 'Bağlantı Yok' : 'Offline')}
+            </span>
+          </div>
+
           {/* Language Switcher */}
           <div className="flex bg-slate-800/40 border border-slate-700/50 rounded-2xl p-1 text-xs">
             <button
@@ -92,9 +103,7 @@ export default function Landing({ onNavigateToLogin }) {
           transition={{ duration: 0.6 }}
           className="space-y-6"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">
-            <Zap size={14} /> MVP Platform v1.0
-          </div>
+
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight max-w-4xl mx-auto">
             {t('landing_hero_title')}
           </h1>
@@ -195,10 +204,7 @@ export default function Landing({ onNavigateToLogin }) {
           </div>
         </div>
 
-        <div className="flex justify-center items-center gap-3 bg-slate-900/50 border border-slate-800 rounded-full px-6 py-2.5 w-max mx-auto text-xs text-slate-400 font-bold">
-          <div className={`w-2.5 h-2.5 rounded-full ${chainConnected ? 'bg-emerald-400 animate-pulse' : 'bg-rose-500'}`} />
-          {lang === 'TR' ? 'Blockchain Ağ Durumu:' : 'Blockchain Network Status:'} {chainConnected ? (lang === 'TR' ? 'Bağlı & Aktif' : 'Connected & Active') : (lang === 'TR' ? 'Bağlantı Yok' : 'No Connection')}
-        </div>
+
       </section>
 
       {/* Footer */}
