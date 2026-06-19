@@ -14,10 +14,14 @@ export default function Settings({ auth, setAuth }) {
   const [newUsername, setNewUsername] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
   const [newUserRole, setNewUserRole] = useState('user');
+  const [newWalletAddress, setNewWalletAddress] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
   const [regMsg, setRegMsg] = useState({ text: '', type: '' });
 
   const [themeMsg, setThemeMsg] = useState({ text: '', type: '' });
+
+  const [userWalletAddress, setUserWalletAddress] = useState(auth.wallet_address || '');
+  const [walletMsg, setWalletMsg] = useState({ text: '', type: '' });
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
@@ -48,12 +52,14 @@ export default function Settings({ auth, setAuth }) {
         admin_password: adminPassword,
         new_username: newUsername,
         new_password: newUserPassword,
-        role: newUserRole
+        role: newUserRole,
+        wallet_address: newWalletAddress
       });
       setRegMsg({ text: t('user_register_success'), type: 'success' });
       setNewUsername('');
       setNewUserPassword('');
       setAdminPassword('');
+      setNewWalletAddress('');
     } catch (err) {
       setRegMsg({ 
         text: err.response?.data?.detail || t('user_register_error'), 
@@ -77,6 +83,24 @@ export default function Settings({ auth, setAuth }) {
       setTimeout(() => setThemeMsg({ text: '', type: '' }), 3000);
     } catch (_) {
       setThemeMsg({ text: t('theme_error'), type: 'error' });
+    }
+  };
+
+  const handleWalletUpdate = async (e) => {
+    e.preventDefault();
+    setWalletMsg({ text: lang === 'TR' ? 'Güncelleniyor...' : 'Updating...', type: 'info' });
+    try {
+      const res = await axios.put(`${BACKEND_URL}/api/auth/wallet-address`, {
+        username: auth.username,
+        wallet_address: userWalletAddress
+      });
+      setWalletMsg({ text: lang === 'TR' ? 'Cüzdan adresi başarıyla güncellendi' : 'Wallet address updated successfully', type: 'success' });
+      setAuth({ ...auth, wallet_address: res.data.wallet_address });
+    } catch (err) {
+      setWalletMsg({ 
+        text: err.response?.data?.detail || (lang === 'TR' ? 'Cüzdan adresi güncellenirken hata oluştu' : 'Failed to update wallet address'), 
+        type: 'error' 
+      });
     }
   };
 
@@ -129,6 +153,43 @@ export default function Settings({ auth, setAuth }) {
             </div>
             <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-colors">
               {t('update_password_btn')}
+            </button>
+          </form>
+        </div>
+
+        {/* Cüzdan Hash Değiştir */}
+        <div className="glass-panel p-6 rounded-2xl border border-slate-700/50">
+          <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <SettingsIcon size={20} className="text-emerald-400" /> {lang === 'TR' ? 'Cüzdan Hash Değiştir' : 'Change Wallet Address'}
+          </h2>
+          <form onSubmit={handleWalletUpdate} className="space-y-4">
+            {walletMsg.text && (
+              <div className={`p-3 rounded-xl text-sm ${walletMsg.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : walletMsg.type === 'error' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'}`}>
+                {walletMsg.text}
+              </div>
+            )}
+            <div>
+              <label className="text-xs text-slate-400 font-bold uppercase mb-2 block">{lang === 'TR' ? 'Mevcut Cüzdan Adresi' : 'Current Wallet Address'}</label>
+              <input 
+                type="text" 
+                disabled
+                value={auth.wallet_address || '—'}
+                className="w-full bg-slate-800/20 border border-slate-700/50 text-slate-500 px-4 py-2 rounded-xl outline-none font-mono"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-slate-400 font-bold uppercase mb-2 block">{lang === 'TR' ? 'Yeni Cüzdan Adresi' : 'New Wallet Address'}</label>
+              <input 
+                type="text" 
+                required
+                value={userWalletAddress}
+                onChange={(e) => setUserWalletAddress(e.target.value)}
+                placeholder="0x..."
+                className="w-full bg-slate-800/50 border border-slate-700 text-white px-4 py-2 rounded-xl focus:border-emerald-500 outline-none font-mono"
+              />
+            </div>
+            <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition-colors">
+              {lang === 'TR' ? 'Cüzdan Adresini Güncelle' : 'Update Wallet Address'}
             </button>
           </form>
         </div>
@@ -202,6 +263,18 @@ export default function Settings({ auth, setAuth }) {
                   />
                 </div>
                 <div>
+                  <label className="text-xs text-slate-400 font-bold uppercase mb-2 block">{t('wallet_address')}</label>
+                  <input 
+                    type="text" 
+                    value={newWalletAddress}
+                    onChange={(e) => setNewWalletAddress(e.target.value)}
+                    placeholder="0x..."
+                    className="w-full bg-slate-800/50 border border-slate-700 text-white px-4 py-2 rounded-xl focus:border-emerald-500 outline-none font-mono"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
                   <label className="text-xs text-slate-400 font-bold uppercase mb-2 block">{t('user_role')}</label>
                   <select 
                     value={newUserRole}
@@ -212,16 +285,16 @@ export default function Settings({ auth, setAuth }) {
                     <option value="admin">{t('admin_user')}</option>
                   </select>
                 </div>
-              </div>
-              <div>
-                <label className="text-xs text-slate-400 font-bold uppercase mb-2 block">{t('user_password')}</label>
-                <input 
-                  type="password" 
-                  required
-                  value={newUserPassword}
-                  onChange={(e) => setNewUserPassword(e.target.value)}
-                  className="w-full bg-slate-800/50 border border-slate-700 text-white px-4 py-2 rounded-xl focus:border-emerald-500 outline-none"
-                />
+                <div>
+                  <label className="text-xs text-slate-400 font-bold uppercase mb-2 block">{t('user_password')}</label>
+                  <input 
+                    type="password" 
+                    required
+                    value={newUserPassword}
+                    onChange={(e) => setNewUserPassword(e.target.value)}
+                    className="w-full bg-slate-800/50 border border-slate-700 text-white px-4 py-2 rounded-xl focus:border-emerald-500 outline-none"
+                  />
+                </div>
               </div>
               <div className="pt-4 border-t border-slate-700/50 mt-4">
                 <label className="text-xs text-emerald-400 font-bold uppercase mb-2 block">{t('admin_confirm_password_label')}</label>

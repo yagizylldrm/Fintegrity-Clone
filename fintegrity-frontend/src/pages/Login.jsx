@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, Lock, User, ArrowRight, Loader, PlusCircle } from 'lucide-react';
+import { ShieldCheck, Lock, User, ArrowRight, Loader, PlusCircle, Wallet } from 'lucide-react';
 import axios from 'axios';
 import { BACKEND_URL } from '../config';
 import { useLanguage } from '../LanguageContext';
@@ -11,6 +11,7 @@ export default function Login({ onLogin, onBackToLanding }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [walletAddress, setWalletAddress] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -54,7 +55,8 @@ export default function Login({ onLogin, onBackToLanding }) {
         onLogin({ 
           username, 
           role: response.data.role, 
-          theme: response.data.theme 
+          theme: response.data.theme,
+          wallet_address: response.data.wallet_address
         });
       }
     } catch (err) {
@@ -83,7 +85,8 @@ export default function Login({ onLogin, onBackToLanding }) {
     try {
       const response = await axios.post(`${BACKEND_URL}/api/auth/register-public`, {
         username,
-        password
+        password,
+        wallet_address: walletAddress
       });
 
       if (response.data.success) {
@@ -91,6 +94,7 @@ export default function Login({ onLogin, onBackToLanding }) {
         setIsRegisterMode(false);
         setPassword('');
         setConfirmPassword('');
+        setWalletAddress('');
       }
     } catch (err) {
       if (err.response && err.response.data && err.response.data.detail) {
@@ -307,6 +311,21 @@ export default function Login({ onLogin, onBackToLanding }) {
                         required
                         placeholder={t('confirm_password_placeholder')}
                         className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-white outline-none focus:border-blue-500 transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-slate-400 uppercase font-bold mb-2 block">{t('wallet_address')}</label>
+                    <div className="relative">
+                      <Wallet className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                      <input 
+                        type="text" 
+                        value={walletAddress}
+                        onChange={(e) => setWalletAddress(e.target.value)}
+                        required
+                        placeholder="0x..."
+                        className="w-full bg-slate-900 border border-slate-700 rounded-xl py-3 pl-10 pr-4 text-white outline-none focus:border-blue-500 transition-colors font-mono"
                       />
                     </div>
                   </div>

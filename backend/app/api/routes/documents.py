@@ -18,6 +18,7 @@ class DocumentResponse(BaseModel):
     status: str
     sender: str
     hash: str
+    receiver: Optional[str] = ""
     owner_username: Optional[str] = None
     blockchain_tx_hash: Optional[str] = None
     created_at: Optional[str] = None
@@ -30,6 +31,7 @@ class DocumentCreate(BaseModel):
     type: str
     amount: float
     sender: str
+    receiver: Optional[str] = ""
     status: Optional[str] = "Beklemede"
 
 class DocumentStatusUpdate(BaseModel):
@@ -51,7 +53,8 @@ def get_documents(db: Session = Depends(get_db), current_user = Depends(get_curr
         docs = db.query(Document).order_by(Document.date.desc()).all()
     else:
         docs = db.query(Document).filter(
-            Document.owner_username == current_user.username
+            (Document.receiver == current_user.wallet_address) |
+            (Document.owner_username == current_user.username)
         ).order_by(Document.date.desc()).all()
     
     result = []
@@ -63,6 +66,7 @@ def get_documents(db: Session = Depends(get_db), current_user = Depends(get_curr
             date=doc.date or "",
             status=doc.status or "",
             sender=doc.sender or "",
+            receiver=doc.receiver or "",
             hash=doc.hash or "",
             owner_username=doc.owner_username,
             blockchain_tx_hash=doc.blockchain_tx_hash,
@@ -90,6 +94,7 @@ def create_document(doc: DocumentCreate, db: Session = Depends(get_db), current_
         date=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         status=doc.status,
         sender=doc.sender,
+        receiver=doc.receiver,
         hash=doc_hash,
         owner_username=current_user.username,
         blockchain_tx_hash=blockchain_tx,
@@ -99,14 +104,14 @@ def create_document(doc: DocumentCreate, db: Session = Depends(get_db), current_
     db.add(new_doc)
     
     log_audit(db, current_user.username, "CREATE", "document", doc_id,
-              json.dumps({"type": doc.type, "amount": doc.amount, "sender": doc.sender, "blockchain_tx": blockchain_tx}))
+              json.dumps({"type": doc.type, "amount": doc.amount, "sender": doc.sender, "receiver": doc.receiver or "", "blockchain_tx": blockchain_tx}))
     
     db.commit()
     db.refresh(new_doc)
     return DocumentResponse(
         id=new_doc.id, type=new_doc.type, amount=new_doc.amount,
         date=new_doc.date or "", status=new_doc.status or "",
-        sender=new_doc.sender or "", hash=new_doc.hash or "",
+        sender=new_doc.sender or "", receiver=new_doc.receiver or "", hash=new_doc.hash or "",
         owner_username=new_doc.owner_username,
         blockchain_tx_hash=new_doc.blockchain_tx_hash,
         created_at=str(new_doc.created_at) if new_doc.created_at else None,

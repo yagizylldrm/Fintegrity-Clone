@@ -20,6 +20,8 @@ class ContractResponse(BaseModel):
     hash: str
     status: str
     owner_username: Optional[str] = None
+    start_date: Optional[str] = None
+    completion_date: Optional[str] = None
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
 
@@ -33,6 +35,8 @@ class ContractCreate(BaseModel):
     type: str
     value: str
     parties: List[str]
+    start_date: Optional[str] = None
+    completion_date: Optional[str] = None
     status: Optional[str] = "Pending"
 
 def log_audit(db: Session, username: str, action: str, resource_type: str, resource_id: str, details: str = ""):
@@ -53,6 +57,23 @@ def get_contracts(db: Session = Depends(get_db), current_user = Depends(get_curr
         contracts = db.query(Contract).filter(
             Contract.owner_username == current_user.username
         ).all()
+        
+    # Check expiration date and update status if needed
+    now = datetime.now()
+    updated = False
+    for c in contracts:
+        if c.completion_date and c.status not in ["Closed", "Rejected", "Kapalı"]:
+            try:
+                # completion_date format is "YYYY-MM-DD"
+                comp_date = datetime.strptime(c.completion_date.split(" ")[0], "%Y-%m-%d")
+                if comp_date.date() <= now.date():
+                    c.status = "Kapalı"
+                    c.updated_at = datetime.utcnow()
+                    updated = True
+            except Exception as e:
+                print("Error checking completion date:", e)
+    if updated:
+        db.commit()
     
     res = []
     for c in contracts:
@@ -68,6 +89,8 @@ def get_contracts(db: Session = Depends(get_db), current_user = Depends(get_curr
             hash=c.hash or "",
             status=c.status or "",
             owner_username=c.owner_username,
+            start_date=c.start_date,
+            completion_date=c.completion_date,
             created_at=str(c.created_at) if c.created_at else None,
             updated_at=str(c.updated_at) if c.updated_at else None
         ))
@@ -103,6 +126,8 @@ def create_contract(payload: ContractCreate, db: Session = Depends(get_db), curr
         hash=new_hash,
         status=payload.status,
         owner_username=current_user.username,
+        start_date=payload.start_date,
+        completion_date=payload.completion_date,
         created_at=now,
         updated_at=now
     )
@@ -121,6 +146,8 @@ def create_contract(payload: ContractCreate, db: Session = Depends(get_db), curr
         hash=new_contract.hash,
         status=new_contract.status,
         owner_username=new_contract.owner_username,
+        start_date=new_contract.start_date,
+        completion_date=new_contract.completion_date,
         created_at=str(new_contract.created_at) if new_contract.created_at else None,
         updated_at=str(new_contract.updated_at) if new_contract.updated_at else None
     )

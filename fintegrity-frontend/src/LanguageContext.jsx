@@ -64,7 +64,7 @@ const translations = {
     password_mismatch: "Şifreler uyuşmuyor.",
     login_network_active: "Güvenli Yönetim Ağı",
     login_network_register: "Yapay Zeka Destekli Kayıt Ağı",
-    username_placeholder: "admin veya user",
+    username_placeholder: "kullanıcı adı",
     password_placeholder: "Şifrenizi yazın...",
     confirm_password_placeholder: "Şifrenizi tekrar yazın...",
     username_new_placeholder: "Yeni kullanıcı adı yazın...",
@@ -306,7 +306,17 @@ const translations = {
     landing_stats_title: "Fintegrity Canlı Ağ İstatistikleri",
     landing_stats_desc: "Platform üzerindeki işlemler ve blokzincir durum bilgileri anlık olarak güncellenmektedir.",
     landing_contact_support: "İletişim & Destek",
-    back_to_home: "Ana Sayfaya Dön"
+    wallet_address: "Cüzdan Adresi (Hash)",
+    incoming_transfers: "Para Transferleri",
+    receive_transfer: "Para Transferi Al",
+    secure_transfer_portal: "Güvenli Transfer Alma Modülü",
+    scan_transfer_desc: "Gelen transfer miktarını ve gönderen bilgisini girerek güvenlik taramasını başlatabilirsiniz.",
+    receive_transfer_btn: "Transferi Al ve Denetle",
+    back_to_home: "Ana Sayfaya Dön",
+    start_date: "Başlangıç Tarihi",
+    completion_date: "Bitiş Tarihi",
+    analyze_with_ai: "AI ile Analiz Et",
+    confirm_action: "İşlemi gerçekleştirmek istediğinize emin misiniz?"
   },
   EN: {
     // Sidebar & Navigation
@@ -361,7 +371,7 @@ const translations = {
     password_mismatch: "Passwords do not match.",
     login_network_active: "Secure Management Network",
     login_network_register: "AI-Powered Registration Network",
-    username_placeholder: "admin or user",
+    username_placeholder: "username",
     password_placeholder: "Enter your password...",
     confirm_password_placeholder: "Re-enter your password...",
     username_new_placeholder: "Enter new username...",
@@ -603,7 +613,17 @@ const translations = {
     landing_stats_title: "Fintegrity Live Network Statistics",
     landing_stats_desc: "Transactions and blockchain status metrics on the platform are updated in real-time.",
     landing_contact_support: "Contact & Support",
-    back_to_home: "Back to Home Page"
+    wallet_address: "Wallet Address (Hash)",
+    incoming_transfers: "Money Transfers",
+    receive_transfer: "Receive Transfer",
+    secure_transfer_portal: "Secure Transfer Receiving Module",
+    scan_transfer_desc: "You can start the security scan by entering the incoming transfer amount and sender details.",
+    receive_transfer_btn: "Receive & Audit Transfer",
+    back_to_home: "Back to Home Page",
+    start_date: "Start Date",
+    completion_date: "Completion Date",
+    analyze_with_ai: "Analyze with AI",
+    confirm_action: "Are you sure you want to perform this operation?"
   }
 };
 

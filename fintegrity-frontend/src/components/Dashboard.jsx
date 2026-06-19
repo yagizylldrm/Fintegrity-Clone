@@ -8,11 +8,12 @@ import { mockDocuments } from '../data/mockData';
 import { BACKEND_URL } from '../config';
 import { useLanguage } from '../LanguageContext';
 
-export default function Dashboard() {
+export default function Dashboard({ auth }) {
   const { lang, t } = useLanguage();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [transactions, setTransactions] = useState([]);
+  const [dbDocs, setDbDocs] = useState([]);
   const [aiAnalysis, setAiAnalysis] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [selectedTx, setSelectedTx] = useState(null);
@@ -34,29 +35,33 @@ export default function Dashboard() {
     if (type === 'e-İrsaliye') return lang === 'TR' ? 'e-İrsaliye' : 'e-Waybill';
     if (type === 'e-Sözleşme') return lang === 'TR' ? 'e-Sözleşme' : 'e-Contract';
     if (type === 'e-Makbuz') return lang === 'TR' ? 'e-Makbuz' : 'e-Receipt';
+    if (type === 'Para Transferi') return lang === 'TR' ? 'Para Transferi' : 'Money Transfer';
     return type;
   };
 
-  const generateChartDataFromMock = () => {
+  const generateChartData = (docs) => {
     const dataMap = {};
-    const baseDate = new Date('2026-06-17');
+    const baseDate = new Date();
     
     // Son 7 günü 0 olarak başlat
     for (let i = 6; i >= 0; i--) {
       const d = new Date(baseDate);
-      d.setDate(d.getDate() - i);
+      d.setDate(baseDate.getDate() - i);
       const key = d.toLocaleDateString(lang === 'TR' ? 'tr-TR' : 'en-US', { weekday: 'short' });
       dataMap[key] = 0;
     }
 
-    // Mock belgelerdeki tutarları ilgili güne ekle
-    mockDocuments.forEach(doc => {
-      const d = new Date(doc.date);
-      const key = d.toLocaleDateString(lang === 'TR' ? 'tr-TR' : 'en-US', { weekday: 'short' });
-      if (dataMap[key] !== undefined && doc.amount) {
-        dataMap[key] += doc.amount;
-      }
-    });
+    if (docs && docs.length > 0) {
+      docs.forEach(doc => {
+        if (doc.date) {
+          const d = new Date(doc.date);
+          const key = d.toLocaleDateString(lang === 'TR' ? 'tr-TR' : 'en-US', { weekday: 'short' });
+          if (dataMap[key] !== undefined && doc.amount) {
+            dataMap[key] += doc.amount;
+          }
+        }
+      });
+    }
 
     return Object.keys(dataMap).map(k => ({ name: k, hacim: dataMap[k] }));
   };
@@ -71,8 +76,8 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    setChartData(generateChartDataFromMock());
-  }, [lang]);
+    setChartData(generateChartData(dbDocs));
+  }, [lang, dbDocs]);
 
   useEffect(() => {
     // Stat fetcher
@@ -89,6 +94,11 @@ export default function Dashboard() {
         } catch (_) {
           setChainInfo(null);
         }
+
+        try {
+          const docsRes = await axios.get(`${BACKEND_URL}/api/documents`);
+          setDbDocs(docsRes.data);
+        } catch (_) {}
         
         setNetworkInfo({
           status: 'active',
@@ -123,6 +133,8 @@ export default function Dashboard() {
     // Verileri formdan veya tıklanan işlemden al
     const analysisAmount = tx ? tx.amount : parseInt(aiAmount, 10);
     const analysisAccount = tx ? (tx.sender || tx.account) : aiAccount;
+    const analysisType = auth?.role === 'user' ? 'Para Transferi' : (tx ? tx.type : aiType);
+    const analysisReceiver = tx ? tx.receiver : (auth?.role === 'user' ? auth?.wallet_address : '');
 
     try {
       const res = await axios.post(`${BACKEND_URL}/api/ai/anomaly-detect`, {
@@ -135,22 +147,14 @@ export default function Dashboard() {
         setAiAnalysis({...res.data, amount: analysisAmount});
         setIsAnalyzing(false);
 
-        // 1. Create document
-        try {
-          await axios.post(`${BACKEND_URL}/api/documents`, {
-            type: aiType,
-            amount: parseFloat(analysisAmount),
-            sender: analysisAccount,
-            status: isAnomaly ? "Beklemede" : "Onaylandı"
-          });
-        } catch (e) { console.error("Belge kaydedilemedi", e); }
 
         // 2. Create transaction
         try {
           await axios.post(`${BACKEND_URL}/api/transactions`, {
-            type: aiType,
+            type: analysisType,
             amount: parseFloat(analysisAmount),
             sender: analysisAccount,
+            receiver: analysisReceiver,
             status: isAnomaly ? "pending" : "verified"
           });
         } catch (e) { console.error("İşlem kaydedilemedi", e); }
@@ -183,22 +187,14 @@ export default function Dashboard() {
         });
         setIsAnalyzing(false);
 
-        // 1. Create document
-        try {
-          await axios.post(`${BACKEND_URL}/api/documents`, {
-            type: aiType,
-            amount: parseFloat(analysisAmount),
-            sender: analysisAccount,
-            status: isAnomaly ? "Beklemede" : "Onaylandı"
-          });
-        } catch (e) { console.error("Belge kaydedilemedi", e); }
 
         // 2. Create transaction
         try {
           await axios.post(`${BACKEND_URL}/api/transactions`, {
-            type: aiType,
+            type: analysisType,
             amount: parseFloat(analysisAmount),
             sender: analysisAccount,
+            receiver: analysisReceiver,
             status: isAnomaly ? "pending" : "verified"
           });
         } catch (e) { console.error("İşlem kaydedilemedi", e); }
@@ -323,12 +319,16 @@ export default function Dashboard() {
                           className="p-4 bg-slate-800/40 rounded-xl border border-slate-700/50 cursor-pointer hover:bg-slate-700/50 transition-colors"
                         >
                           <div className="flex justify-between items-start mb-2">
-                            <span className="text-xs font-mono text-slate-400">{tx.hash}</span>
+                            <span className="text-xs font-mono text-slate-400">{tx.hash ? (tx.hash.length > 12 ? `${tx.hash.substring(0, 10)}...` : tx.hash) : ''}</span>
                             <span className="text-xs text-slate-500">{tx.time}</span>
                           </div>
                           <div className="flex justify-between items-center">
                             <span className="font-semibold text-slate-200">{getDocTypeLabel(tx.type)}</span>
                             {typeof tx.amount === 'number' && <span className="text-sm font-bold text-emerald-400">{tx.amount.toLocaleString()} ₺</span>}
+                          </div>
+                          <div className="flex justify-between items-center mt-2 pt-2 border-t border-slate-700/40 text-[10px] text-slate-400">
+                            <span>{t('sender')}: <span className="text-slate-300 font-semibold">{tx.sender || '—'}</span></span>
+                            {tx.receiver && <span>{lang === 'TR' ? 'Alıcı' : 'Receiver'}: <span className="text-slate-300 font-mono font-semibold">{tx.receiver.length > 8 ? `${tx.receiver.substring(0, 6)}...` : tx.receiver}</span></span>}
                           </div>
                         </motion.div>
                       ))}
@@ -391,13 +391,13 @@ export default function Dashboard() {
                       <Activity size={28} className="text-purple-400" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-black">{t('ai_audit_scanner')}</h2>
-                      <p className="text-slate-400 text-sm">{t('ai_scanner_desc')}</p>
+                      <h2 className="text-2xl font-black">{auth?.role === 'user' ? t('secure_transfer_portal') : t('ai_audit_scanner')}</h2>
+                      <p className="text-slate-400 text-sm">{auth?.role === 'user' ? t('scan_transfer_desc') : t('ai_scanner_desc')}</p>
                     </div>
                   </div>
                   
                   <div className="space-y-4 mb-8">
-                    <p className="text-sm text-slate-300">{t('scan_form_desc')}</p>
+                    {auth?.role !== 'user' && <p className="text-sm text-slate-300">{t('scan_form_desc')}</p>}
                     
                     <div className="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 space-y-6">
                       <div>
@@ -414,7 +414,9 @@ export default function Dashboard() {
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="text-xs text-slate-400 uppercase font-semibold mb-2 block">{t('account_id')}</label>
+                          <label className="text-xs text-slate-400 uppercase font-semibold mb-2 block">
+                            {auth?.role === 'user' ? (lang === 'TR' ? 'Gönderen Cüzdan / Hesap ID' : 'Sender Wallet / Account ID') : t('account_id')}
+                          </label>
                           <div className="relative">
                             <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
                             <input 
@@ -426,17 +428,33 @@ export default function Dashboard() {
                           </div>
                         </div>
                         <div>
-                          <label className="text-xs text-slate-400 uppercase font-semibold mb-2 block">{t('doc_type')}</label>
-                          <select 
-                            value={aiType}
-                            onChange={(e) => setAiType(e.target.value)}
-                            className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white outline-none focus:border-purple-500 transition-colors appearance-none cursor-pointer"
-                          >
-                            <option value="e-Fatura">{getDocTypeLabel('e-Fatura')}</option>
-                            <option value="e-İrsaliye">{getDocTypeLabel('e-İrsaliye')}</option>
-                            <option value="e-Sözleşme">{getDocTypeLabel('e-Sözleşme')}</option>
-                            <option value="Para Transferi">{lang === 'TR' ? 'Para Transferi' : 'Money Transfer'}</option>
-                          </select>
+                          {auth?.role === 'user' ? (
+                            <>
+                              <label className="text-xs text-slate-400 uppercase font-semibold mb-2 block">{lang === 'TR' ? 'Alıcı Cüzdan (Siz)' : 'Recipient Wallet (You)'}</label>
+                              <div className="relative">
+                                <input 
+                                  type="text" 
+                                  value={auth?.wallet_address || ''} 
+                                  disabled 
+                                  className="w-full bg-slate-900/50 border border-slate-800 rounded-lg p-3 text-slate-400 outline-none font-mono text-sm cursor-not-allowed"
+                                />
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <label className="text-xs text-slate-400 uppercase font-semibold mb-2 block">{t('doc_type')}</label>
+                              <select 
+                                value={aiType}
+                                onChange={(e) => setAiType(e.target.value)}
+                                className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white outline-none focus:border-purple-500 transition-colors appearance-none cursor-pointer"
+                              >
+                                <option value="e-Fatura">{getDocTypeLabel('e-Fatura')}</option>
+                                <option value="e-İrsaliye">{getDocTypeLabel('e-İrsaliye')}</option>
+                                <option value="e-Sözleşme">{getDocTypeLabel('e-Sözleşme')}</option>
+                                <option value="Para Transferi">{lang === 'TR' ? 'Para Transferi' : 'Money Transfer'}</option>
+                              </select>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -453,7 +471,7 @@ export default function Dashboard() {
                   disabled={isAnalyzing}
                   className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-3 ${isAnalyzing ? 'bg-slate-700 text-slate-400 cursor-not-allowed' : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white shadow-lg shadow-purple-500/25 transform hover:-translate-y-1'}`}
                 >
-                  {isAnalyzing ? <><Activity className="animate-spin" /> {t('scanning')}</> : <><Zap size={20} /> {t('run_ai_scan')}</>}
+                  {isAnalyzing ? <><Activity className="animate-spin" /> {t('scanning')}</> : <><Zap size={20} /> {auth?.role === 'user' ? t('receive_transfer_btn') : t('run_ai_scan')}</>}
                 </button>
               </div>
 
@@ -690,6 +708,16 @@ export default function Dashboard() {
                   <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/30">
                     <p className="text-xs text-slate-500 uppercase mb-1">{t('amount')}</p>
                     <p className="font-semibold text-white">{typeof selectedTx.amount === 'number' ? `${selectedTx.amount.toLocaleString()} ₺` : t('not_specified')}</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/30">
+                    <p className="text-xs text-slate-500 uppercase mb-1">{t('sender')}</p>
+                    <p className="font-semibold text-white truncate" title={selectedTx.sender}>{selectedTx.sender || '—'}</p>
+                  </div>
+                  <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/30">
+                    <p className="text-xs text-slate-500 uppercase mb-1">{lang === 'TR' ? 'Alıcı' : 'Receiver'}</p>
+                    <p className="font-semibold text-white truncate" title={selectedTx.receiver}>{selectedTx.receiver || '—'}</p>
                   </div>
                 </div>
                 <button 

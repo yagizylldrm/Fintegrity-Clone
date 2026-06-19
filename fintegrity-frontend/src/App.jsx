@@ -31,9 +31,23 @@ import { useLanguage } from "./LanguageContext";
 
 function App() {
   const { lang, changeLang, t } = useLanguage();
-  const [auth, setAuth] = useState(null);
+  const [auth, setAuth] = useState(() => {
+    const savedUser = localStorage.getItem('auth_user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const [isNetworkUp, setIsNetworkUp] = useState(true);
-  const [viewMode, setViewMode] = useState('landing');
+  const [viewMode, setViewMode] = useState(() => {
+    return localStorage.getItem('auth_token') ? 'app' : 'landing';
+  });
+
+  const saveAuth = (newAuth) => {
+    setAuth(newAuth);
+    if (newAuth) {
+      localStorage.setItem('auth_user', JSON.stringify(newAuth));
+    } else {
+      localStorage.removeItem('auth_user');
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
@@ -54,7 +68,7 @@ function App() {
         username: auth.username,
         theme: nextTheme
       });
-      setAuth({ ...auth, theme: nextTheme });
+      saveAuth({ ...auth, theme: nextTheme });
     } catch (err) {
       console.error("Tema güncellenemedi", err);
     }
@@ -75,13 +89,13 @@ function App() {
   }, []);
 
   const handleLogin = (userData) => {
-    setAuth(userData);
+    saveAuth(userData);
   };
 
   const handleLogout = () => {
     localStorage.removeItem('auth_token');
+    saveAuth(null);
     delete axios.defaults.headers.common['Authorization'];
-    setAuth(null);
     setViewMode('landing');
   };
 
@@ -93,19 +107,7 @@ function App() {
     return <Login onLogin={handleLogin} onBackToLanding={() => setViewMode('landing')} />;
   }
 
-  // Eğer giriş yapan kişi standart bir kullanıcı ise sadece User Portal'ı göster
-  if (auth.role === "user") {
-    return (
-      <UserPortal
-        username={auth.username}
-        onLogout={handleLogout}
-        auth={auth}
-        setAuth={setAuth}
-      />
-    );
-  }
-
-  // Eğer giriş yapan kişi admin ise ana sistemi göster
+  // Her iki rol için de ana sistemi (Sidebar + Router) göster
   return (
     <Router>
       <div
@@ -163,7 +165,7 @@ function App() {
               }
             >
               <FileText size={20} />
-              {t('all_documents')}
+              {auth.role === 'admin' ? t('all_documents') : t('incoming_transfers')}
             </NavLink>
 
             <NavLink
@@ -267,13 +269,13 @@ function App() {
 
           <div className="flex-1">
             <Routes>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<Dashboard auth={auth} />} />
               <Route path="/documents" element={<Documents auth={auth} />} />
               <Route path="/contracts" element={<Contracts auth={auth} />} />
-              <Route path="/anomalies" element={<Anomalies />} />
+              <Route path="/anomalies" element={<Anomalies auth={auth} />} />
               <Route
                 path="/settings"
-                element={<Settings auth={auth} setAuth={setAuth} />}
+                element={<Settings auth={auth} setAuth={saveAuth} />}
               />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

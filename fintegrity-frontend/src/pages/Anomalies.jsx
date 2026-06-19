@@ -5,7 +5,7 @@ import axios from 'axios';
 import { BACKEND_URL } from '../config';
 import { useLanguage } from '../LanguageContext';
 
-export default function Anomalies() {
+export default function Anomalies({ auth }) {
   const { lang, t } = useLanguage();
   const [selectedAnomaly, setSelectedAnomaly] = useState(null);
   const [anomaliesList, setAnomaliesList] = useState([]);
@@ -31,6 +31,10 @@ export default function Anomalies() {
   }, []);
 
   const handleAction = async (id, type) => {
+    const msg = lang === 'TR' 
+      ? "İşlemi gerçekleştirmek istediğinize emin misiniz?" 
+      : "Are you sure you want to perform this operation?";
+    if (!window.confirm(msg)) return;
     try {
       const newStatus = type === 'safe' ? 'Güvenli' : 'Donduruldu';
       await axios.put(`${BACKEND_URL}/api/anomalies/${id}/resolve`, {
@@ -299,9 +303,9 @@ export default function Anomalies() {
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className="bg-[#1e293b] border border-slate-700 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden"
+              className="bg-[#1e293b] border border-slate-700 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             >
-              <div className="flex justify-between items-center p-6 border-b border-slate-700/50 bg-slate-800/50">
+              <div className="flex justify-between items-center p-6 border-b border-slate-700/50 bg-slate-800/50 shrink-0">
                 <h3 className="text-xl font-bold flex items-center gap-2 text-white">
                   <Activity size={20} className="text-rose-400"/> {selectedAnomaly.id} {t('anomaly_review')}
                 </h3>
@@ -309,7 +313,7 @@ export default function Anomalies() {
                   <X size={20} />
                 </button>
               </div>
-              <div className="p-6 space-y-6">
+              <div className="p-6 space-y-6 text-left overflow-y-auto custom-scrollbar flex-1">
                 <div className="flex justify-between items-center bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
                   <div>
                     <p className="text-xs text-slate-500 uppercase mb-1">{t('risk_level')}</p>
@@ -343,28 +347,33 @@ export default function Anomalies() {
                   <div className="bg-slate-900 p-3 rounded-xl border border-slate-800 break-all">
                     <p className="font-mono text-xs text-blue-400">{selectedAnomaly.txHash}9a8b7c6d5e4f3g</p>
                   </div>
+                  {selectedAnomaly.status === 'Beklemede' ? (
+                    auth?.role === 'admin' ? (
+                      <div className="flex gap-4 pt-4 border-t border-slate-700/50">
+                        <button 
+                          onClick={() => handleAction(selectedAnomaly.id, 'safe')}
+                          className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-emerald-500/20"
+                        >
+                          {t('mark_safe')}
+                        </button>
+                        <button 
+                          onClick={() => handleAction(selectedAnomaly.id, 'freeze')}
+                          className="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-rose-500/20"
+                        >
+                          {t('freeze_transaction')}
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="p-4 mt-4 rounded-xl text-center font-bold border bg-slate-800/50 text-slate-400 border-slate-700/50">
+                        {lang === 'TR' ? 'Yönetici İncelemesi Bekleniyor' : 'Awaiting Admin Review'}
+                      </div>
+                    )
+                  ) : (
+                    <div className={`p-4 mt-4 rounded-xl text-center font-bold border ${selectedAnomaly.status === 'Güvenli' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'}`}>
+                      {t('previously_resolved_msg').replace('{status}', getStatusLabel(selectedAnomaly.status))}
+                    </div>
+                  )}
                 </div>
-
-                {selectedAnomaly.status === 'Beklemede' ? (
-                  <div className="flex gap-4 pt-4 border-t border-slate-700/50">
-                    <button 
-                      onClick={() => handleAction(selectedAnomaly.id, 'safe')}
-                      className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-emerald-500/20"
-                    >
-                      {t('mark_safe')}
-                    </button>
-                    <button 
-                      onClick={() => handleAction(selectedAnomaly.id, 'freeze')}
-                      className="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-3 rounded-xl transition-colors shadow-lg shadow-rose-500/20"
-                    >
-                      {t('freeze_transaction')}
-                    </button>
-                  </div>
-                ) : (
-                  <div className={`p-4 rounded-xl text-center font-bold border ${selectedAnomaly.status === 'Güvenli' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'}`}>
-                    {t('previously_resolved_msg').replace('{status}', getStatusLabel(selectedAnomaly.status))}
-                  </div>
-                )}
               </div>
             </motion.div>
           </motion.div>

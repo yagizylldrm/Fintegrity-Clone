@@ -19,6 +19,7 @@ class User(Base):
     password_hash = Column(String)
     role = Column(String) # 'admin' or 'user'
     theme = Column(String, default='current') # 'current', 'light', 'dark'
+    wallet_address = Column(String, index=True, nullable=True)
 
 class Anomaly(Base):
     __tablename__ = "anomalies"
@@ -44,6 +45,8 @@ class Contract(Base):
     hash = Column(String)
     status = Column(String) # 'Pending', 'Active', 'Approved', 'Rejected'
     owner_username = Column(String, default='admin')
+    start_date = Column(String, nullable=True)
+    completion_date = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -59,6 +62,7 @@ class Document(Base):
     hash = Column(String)
     owner_username = Column(String, default='admin')
     blockchain_tx_hash = Column(String, default='')
+    receiver = Column(String, default='', nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -72,6 +76,7 @@ class Transaction(Base):
     amount = Column(Float)
     time = Column(String)
     sender = Column(String)
+    receiver = Column(String, default='', nullable=True)
 
 class AuditLog(Base):
     __tablename__ = "audit_logs"

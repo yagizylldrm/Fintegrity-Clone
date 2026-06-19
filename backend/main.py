@@ -45,6 +45,11 @@ def run_migrations():
         ("contracts", "updated_at", "TIMESTAMP"),
         ("anomalies", "owner_username", "TEXT DEFAULT 'admin'"),
         ("anomalies", "created_at", "TIMESTAMP"),
+        ("users", "wallet_address", "TEXT"),
+        ("documents", "receiver", "TEXT DEFAULT ''"),
+        ("transactions", "receiver", "TEXT DEFAULT ''"),
+        ("contracts", "completion_date", "TEXT"),
+        ("contracts", "start_date", "TEXT"),
     ]
     
     for table, column, col_type in migrations:
@@ -76,13 +81,18 @@ def startup_event():
             db.add(admin_user)
         
         # Check if standard user exists
-        if not db.query(User).filter(User.username == "user").first():
+        standard_user = db.query(User).filter(User.username == "user").first()
+        if not standard_user:
             standard_user = User(
                 username="user", 
                 password_hash=pwd_context.hash("user123"), 
-                role="user"
+                role="user",
+                wallet_address="0x1"
             )
             db.add(standard_user)
+        else:
+            # Ensure the test user has a simple wallet address (e.g. 0x1)
+            standard_user.wallet_address = "0x1"
             
         db.commit()
 

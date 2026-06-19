@@ -17,6 +17,7 @@ class TransactionResponse(BaseModel):
     amount: float
     time: str
     sender: str
+    receiver: Optional[str] = ""
 
     class Config:
         orm_mode = True
@@ -25,6 +26,7 @@ class TransactionCreate(BaseModel):
     type: str
     amount: float
     sender: str
+    receiver: Optional[str] = ""
     status: Optional[str] = "pending"
 
 class TransactionReq(BaseModel):
@@ -33,7 +35,13 @@ class TransactionReq(BaseModel):
 
 @router.get("/", response_model=List[TransactionResponse])
 def get_all_transactions(db: Session = Depends(get_db), current_user = Depends(get_current_user)):
-    return db.query(Transaction).order_by(Transaction.time.desc()).all()
+    if current_user.role == "admin":
+        return db.query(Transaction).order_by(Transaction.time.desc()).all()
+    else:
+        return db.query(Transaction).filter(
+            (Transaction.receiver == current_user.wallet_address) |
+            (Transaction.sender == current_user.username)
+        ).order_by(Transaction.time.desc()).all()
 
 @router.post("/", response_model=TransactionResponse)
 def create_transaction(tx: TransactionCreate, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
@@ -47,7 +55,8 @@ def create_transaction(tx: TransactionCreate, db: Session = Depends(get_db), cur
         status=tx.status,
         amount=tx.amount,
         time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        sender=tx.sender
+        sender=tx.sender,
+        receiver=tx.receiver
     )
     db.add(new_tx)
     db.commit()

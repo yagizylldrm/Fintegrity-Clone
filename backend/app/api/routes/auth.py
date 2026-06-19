@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from passlib.context import CryptContext
@@ -20,6 +21,7 @@ class LoginResponse(BaseModel):
     message: str
     theme: str
     access_token: Optional[str] = None
+    wallet_address: Optional[str] = None
 
 class ChangePasswordRequest(BaseModel):
     username: str
@@ -32,13 +34,14 @@ class RegisterRequest(BaseModel):
     new_username: str
     new_password: str
     role: str
+    wallet_address: Optional[str] = None
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 @router.post("/login", response_model=LoginResponse)
 def login(request: LoginRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == request.username).first()
+    user = db.query(User).filter(func.lower(User.username) == func.lower(request.username)).first()
     if not user or not verify_password(request.password, user.password_hash):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -53,12 +56,13 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
         role=user.role,
         message="Giriş başarılı",
         theme=user.theme or "current",
-        access_token=token
+        access_token=token,
+        wallet_address=user.wallet_address
     )
 
 @router.post("/change-password")
 def change_password(request: ChangePasswordRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == request.username).first()
+    user = db.query(User).filter(func.lower(User.username) == func.lower(request.username)).first()
     if not user or not verify_password(request.old_password, user.password_hash):
         raise HTTPException(status_code=400, detail="Mevcut şifre hatalı")
     
@@ -69,19 +73,20 @@ def change_password(request: ChangePasswordRequest, db: Session = Depends(get_db
 @router.post("/register")
 def register(request: RegisterRequest, db: Session = Depends(get_db)):
     # Verify Admin
-    admin = db.query(User).filter(User.username == request.admin_username, User.role == "admin").first()
+    admin = db.query(User).filter(func.lower(User.username) == func.lower(request.admin_username), User.role == "admin").first()
     if not admin or not verify_password(request.admin_password, admin.password_hash):
         raise HTTPException(status_code=403, detail="Sadece yöneticiler yeni kullanıcı ekleyebilir")
         
     # Check if user exists
-    if db.query(User).filter(User.username == request.new_username).first():
+    if db.query(User).filter(func.lower(User.username) == func.lower(request.new_username)).first():
         raise HTTPException(status_code=400, detail="Bu kullanıcı adı zaten alınmış")
         
     new_user = User(
         username=request.new_username,
         password_hash=pwd_context.hash(request.new_password),
         role=request.role,
-        theme="current"
+        theme="current",
+        wallet_address=request.wallet_address
     )
     db.add(new_user)
     db.commit()
@@ -90,11 +95,12 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
 class PublicRegisterRequest(BaseModel):
     username: str
     password: str
+    wallet_address: Optional[str] = None
 
 @router.post("/register-public")
 def register_public(request: PublicRegisterRequest, db: Session = Depends(get_db)):
     # Prevent duplicate usernames
-    user = db.query(User).filter(User.username == request.username).first()
+    user = db.query(User).filter(func.lower(User.username) == func.lower(request.username)).first()
     if user:
         raise HTTPException(status_code=400, detail="Bu kullanıcı adı zaten alınmış")
         
@@ -102,7 +108,8 @@ def register_public(request: PublicRegisterRequest, db: Session = Depends(get_db
         username=request.username,
         password_hash=pwd_context.hash(request.password),
         role="user",
-        theme="current"
+        theme="current",
+        wallet_address=request.wallet_address
     )
     db.add(new_user)
     db.commit()
@@ -114,10 +121,24 @@ class ThemeUpdateRequest(BaseModel):
 
 @router.put("/theme")
 def update_theme(request: ThemeUpdateRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == request.username).first()
+    user = db.query(User).filter(func.lower(User.username) == func.lower(request.username)).first()
     if not user:
         raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
     
     user.theme = request.theme
     db.commit()
     return {"success": True, "theme": user.theme}
+
+class WalletUpdateRequest(BaseModel):
+    username: str
+    wallet_address: str
+
+@router.put("/wallet-address")
+def update_wallet_address(request: WalletUpdateRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(func.lower(User.username) == func.lower(request.username)).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
+    
+    user.wallet_address = request.wallet_address
+    db.commit()
+    return {"success": True, "wallet_address": user.wallet_address}
