@@ -21,7 +21,7 @@ Fintegrity, e-dönüşüm süreçlerini (e-Fatura, e-İrsaliye, e-Sözleşme) bl
 ## 🏗️ Mimari
 
 ```
-fintegrity-staj/
+fintegrity/
 ├── backend/                 # FastAPI Backend (Python)
 │   ├── app/
 │   │   ├── ai_module/       # ML modelleri, CSV veri kümeleri ve eğitim hattı (train.py)
@@ -39,7 +39,7 @@ fintegrity-staj/
 │   ├── contracts/
 │   │   ├── FintegrityCore.sol      # Belge hash kayıt kontratı
 │   │   └── SmartAgreements.sol     # Akıllı sözleşme kontratı
-│   ├── test/                # Hardhat test suite (9 test)
+│   ├── test/                # Hardhat test suite (9 tests)
 │   └── scripts/deploy.ts    # Deployment script
 ├── fintegrity-frontend/     # React Frontend (Vite)
 │   └── src/
